@@ -73,6 +73,8 @@ The name *EighthBridge* derives from the famous [problem of the 7 bridges of Kö
 
 ## Further references
 
+* [Facebook page](https://www.facebook.com/EighthBridge-190637781313301)
+
 * [GraphsJ](https://github.com/giancosta86/GraphsJ)
 
 * [Scala](http://scala-lang.org/)
