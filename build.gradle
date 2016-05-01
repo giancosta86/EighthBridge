@@ -28,28 +28,27 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
-        classpath 'info.gianlucacosta.aurora:aurora:2.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
+        classpath 'info.gianlucacosta.aurora:aurora:3.0'
     }
 }
 
 
 apply plugin: 'scala'
-apply plugin: 'info.gianlucacosta.aurora'
 apply plugin: 'osgi'
+apply plugin: 'maven'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'info.gianlucacosta.moonlicense'
+apply plugin: 'info.gianlucacosta.aurora'
 
 
 group = 'info.gianlucacosta.eighthbridge'
 archivesBaseName = 'eighthbridge'
-version = '1.0'
+version = '1.1'
 
 description = 'Interactive graph modeling and rendering for ScalaFX'
 
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.11.8'
@@ -58,7 +57,6 @@ dependencies {
 
 
 aurora {
-    docTask = 'scaladoc'
     gitHubUser = 'giancosta86'
 
     author {
@@ -68,11 +66,9 @@ aurora {
     }
 
     bintray {
-        user = project.bintrayUser
-        key = project.bintrayKey
         repo = 'Hephaestus'
         licenses = ['Apache-2.0']
-        labels = ['graph', 'modeling', 'rendering', 'interactive', 'Scala', 'ScalFX', 'functional', 'OOP', 'JavaFX']
+        labels = ['graph', 'modeling', 'rendering', 'interactive', 'Scala', 'ScalaFX', 'functional', 'OOP', 'JavaFX']
     }
 }
 
