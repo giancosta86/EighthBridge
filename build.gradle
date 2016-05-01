@@ -49,6 +49,8 @@ version = '1.1'
 
 description = 'Interactive graph modeling and rendering for ScalaFX'
 
+ext.facebookPage = "https://www.facebook.com/EighthBridge-190637781313301"
+
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.11.8'
