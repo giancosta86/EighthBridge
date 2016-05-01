@@ -2,3 +2,4 @@
 /build/**
 /.idea/**
 /*.iml
+/src/main/scala/info/gianlucacosta/eighthbridge/ArtifactInfo.scala
