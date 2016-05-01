@@ -30,7 +30,7 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
-        classpath 'info.gianlucacosta.aurora:aurora:3.0'
+        classpath 'info.gianlucacosta.aurora:aurora:4.0'
     }
 }
 
@@ -45,7 +45,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.eighthbridge'
 archivesBaseName = 'eighthbridge'
-version = '1.1'
+version = '1.2'
 
 description = 'Interactive graph modeling and rendering for ScalaFX'
 
