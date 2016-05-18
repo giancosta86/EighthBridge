@@ -164,9 +164,7 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
   Overridden methods
    */
 
-  protected def graphCopy(vertexes: Set[VisualVertex], links: Set[VisualLink] = links, bindings: Set[ArcBinding] = bindings): VisualGraph =
-    graphCopy(vertexes, links, bindings)
-
+  protected override def graphCopy(vertexes: Set[VisualVertex], links: Set[VisualLink] = links, bindings: Set[ArcBinding] = bindings): VisualGraph
 
   override def addVertexes(vertexesToAdd: Set[VisualVertex]): VisualGraph =
     super.addVertexes(vertexesToAdd).asInstanceOf[VisualGraph]
