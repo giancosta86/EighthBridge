@@ -32,26 +32,26 @@ import scalafx.geometry.Point2D
   * @tparam V Vertex
   * @tparam L Link
   */
-trait InteractiveEditingController[V <: VisualVertex, L <: VisualLink] extends BasicController {
-  override def setVertexSelectedState(graph: VisualGraph, vertex: VisualVertex, selected: Boolean): Option[VisualGraph] =
+trait InteractiveEditingController[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
+  override def setVertexSelectedState(graph: G, vertex: V, selected: Boolean): Option[G] =
     Some(
       graph.replaceVertex(vertex.visualCopy(selected = selected))
     )
 
 
-  override def setLinkSelectedState(graph: VisualGraph, link: VisualLink, selected: Boolean): Option[VisualGraph] =
+  override def setLinkSelectedState(graph: G, link: L, selected: Boolean): Option[G] =
     Some(
       graph.replaceLink(link.visualCopy(selected = selected))
     )
 
 
-  override def setSelection(graph: VisualGraph, selectionVertexes: Set[VisualVertex], selectionLinks: Set[VisualLink]): Option[VisualGraph] =
+  override def setSelection(graph: G, selectionVertexes: Set[V], selectionLinks: Set[L]): Option[G] =
     Some(
       graph.setSelection(selectionVertexes, selectionLinks)
     )
 
 
-  override def deleteSelection(graph: VisualGraph): Option[VisualGraph] = {
+  override def deleteSelection(graph: G): Option[G] = {
     val selectedVertexes = graph.selectedVertexes
     val selectedLinks = graph.selectedLinks
 
@@ -63,13 +63,13 @@ trait InteractiveEditingController[V <: VisualVertex, L <: VisualLink] extends B
   }
 
 
-  override def dragSelection(graph: VisualGraph, delta: Point2D): Option[VisualGraph] =
+  override def dragSelection(graph: G, delta: Point2D): Option[G] =
     Some(
       graph.moveSelectedVertexesBy(delta)
     )
 
 
-  override def createLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[VisualGraph] = {
+  override def createLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] = {
     val newLink = link.visualCopy(internalPoints = newInternalPoints)
 
     Some(
@@ -78,11 +78,11 @@ trait InteractiveEditingController[V <: VisualVertex, L <: VisualLink] extends B
   }
 
 
-  override def canDragLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], oldInternalPoint: Point2D, newInternalPoint: Point2D): Boolean =
+  override def canDragLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], oldInternalPoint: Point2D, newInternalPoint: Point2D): Boolean =
     true
 
 
-  override def deleteLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[VisualGraph] = {
+  override def deleteLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] = {
     val newLink = link.visualCopy(internalPoints = newInternalPoints)
 
     Some(
@@ -90,7 +90,7 @@ trait InteractiveEditingController[V <: VisualVertex, L <: VisualLink] extends B
     )
   }
 
-  override def dragLinkLabel(graph: VisualGraph, link: VisualLink, oldCenter: Point2D, newCenter: Point2D): Option[VisualGraph] = {
+  override def dragLinkLabel(graph: G, link: L, oldCenter: Point2D, newCenter: Point2D): Option[G] = {
     val newLink = link.visualCopy(
       labelCenter = Some(
         newCenter
@@ -103,7 +103,7 @@ trait InteractiveEditingController[V <: VisualVertex, L <: VisualLink] extends B
   }
 
 
-  override def editVertex(graph: VisualGraph, vertex: VisualVertex): Option[VisualGraph] = {
+  override def editVertex(graph: G, vertex: V): Option[G] = {
     while (true) {
       try {
         val editResult = interactiveVertexEditing(graph, vertex.asInstanceOf[V])
@@ -135,10 +135,10 @@ trait InteractiveEditingController[V <: VisualVertex, L <: VisualLink] extends B
     * @return Some(new vertex) if the editing is complete, None if the user canceled the editing
     *
     */
-  protected def interactiveVertexEditing(graph: VisualGraph, vertex: V): Option[VisualVertex]
+  protected def interactiveVertexEditing(graph: G, vertex: V): Option[V]
 
 
-  override def editLink(graph: VisualGraph, link: VisualLink): Option[VisualGraph] = {
+  override def editLink(graph: G, link: L): Option[G] = {
     while (true) {
       try {
         val editResult = interactiveLinkEditing(graph, link.asInstanceOf[L])
@@ -170,5 +170,5 @@ trait InteractiveEditingController[V <: VisualVertex, L <: VisualLink] extends B
     * @return Some(new link) if the editing is complete, None if the user canceled the editing
     *
     */
-  protected def interactiveLinkEditing(graph: VisualGraph, link: L): Option[VisualLink]
+  protected def interactiveLinkEditing(graph: G, link: L): Option[L]
 }

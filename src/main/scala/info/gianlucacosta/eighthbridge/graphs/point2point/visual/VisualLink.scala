@@ -27,7 +27,7 @@ import scalafx.geometry.Point2D
 /**
   * A link for VisualGraph
   */
-trait VisualLink extends Link {
+trait VisualLink[L <: VisualLink[L]] extends Link { this: L =>
   def internalPoints: List[Point2D]
 
   def text: String
@@ -46,7 +46,7 @@ trait VisualLink extends Link {
                   text: String = text,
 
                   selected: Boolean = selected,
-                  labelCenter: Option[Point2D] = labelCenter): VisualLink
+                  labelCenter: Option[Point2D] = labelCenter): L
 
 
   override def toString: String = text

@@ -25,12 +25,12 @@ import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, V
 /**
   * Controller telling GraphCanvas how to create JavaFX nodes for GraphComponents and how to handle node deletion
   */
-trait GraphCanvasController {
-  def createBackgroundNode(): BackgroundNode
+trait GraphCanvasController[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] {
+  def createBackgroundNode(): BackgroundNode[V, L, G]
 
-  def createVertexNode(vertex: VisualVertex): VertexNode
+  def createVertexNode(vertex: V): VertexNode[V, L, G]
 
-  def createLinkNode(sourceVertex: VisualVertex, targetVertex: VisualVertex, link: VisualLink): LinkNode
+  def createLinkNode(sourceVertex: V, targetVertex: V, link: L): LinkNode[V, L, G]
 
-  def deleteSelection(graph: VisualGraph): Option[VisualGraph]
+  def deleteSelection(graph: G): Option[G]
 }

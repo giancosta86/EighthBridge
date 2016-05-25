@@ -21,7 +21,7 @@
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualVertex}
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 import info.gianlucacosta.eighthbridge.util.fx.geometry.MouseEventExtensions._
 import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
 
@@ -35,14 +35,14 @@ import scalafx.scene.text.Text
 /**
   * Default, interactive implementation of VertexNode
   */
-class BasicVertexNode extends Group with VertexNode {
-  private var controller: BasicController = _
-  private var graph: VisualGraph = _
-  private var _vertex: VisualVertex = _
+class BasicVertexNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends Group with VertexNode[V, L, G] {
+  private var controller: BasicController[V, L, G] = _
+  private var graph: G = _
+  private var _vertex: V = _
 
-  override def vertex: VisualVertex = _vertex
+  override def vertex: V = _vertex
 
-  private def vertex_=(newVertex: VisualVertex): Unit = {
+  private def vertex_=(newVertex: V): Unit = {
     this._vertex = newVertex
   }
 
@@ -55,8 +55,8 @@ class BasicVertexNode extends Group with VertexNode {
   children.addAll(vertexBox, labelTextBox)
 
 
-  override def setup(controller: GraphCanvasController, graph: VisualGraph, vertex: VisualVertex): Unit = {
-    this.controller = controller.asInstanceOf[BasicController]
+  override def setup(controller: GraphCanvasController[V, L, G], graph: G, vertex: V): Unit = {
+    this.controller = controller.asInstanceOf[BasicController[V, L, G]]
     this.graph = graph
     this.vertex = vertex
 

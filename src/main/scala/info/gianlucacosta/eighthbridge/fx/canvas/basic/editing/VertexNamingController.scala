@@ -36,7 +36,7 @@ import scalafx.geometry.Point2D
   * @tparam V Vertex
   * @tparam L Link
   */
-trait VertexNamingController[V <: VisualVertex with Named, L <: VisualLink] extends InteractiveEditingController[V, L] {
+trait VertexNamingController[V <: VisualVertex[V] with Named[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends InteractiveEditingController[V, L, G] {
   /**
     * The first index used when creating vertexes
     */
@@ -60,12 +60,12 @@ trait VertexNamingController[V <: VisualVertex with Named, L <: VisualLink] exte
   protected def instantiateVertex(center: Point2D, vertexName: String): V
 
 
-  override def createVertex(graph: VisualGraph, center: Point2D): Option[VisualGraph] = {
+  override def createVertex(graph: G, center: Point2D): Option[G] = {
     val lastUsedVertexIndex = Stream.from(firstIndex)
       .takeWhile(vertexIndex => {
         val vertexName = getVertexName(vertexIndex)
 
-        val vertexNameExists = graph.vertexes.exists(_.asInstanceOf[Named].name == vertexName)
+        val vertexNameExists = graph.vertexes.exists(_.name == vertexName)
 
         vertexNameExists
       })
@@ -84,7 +84,7 @@ trait VertexNamingController[V <: VisualVertex with Named, L <: VisualLink] exte
   }
 
 
-  override protected def interactiveVertexEditing(graph: VisualGraph, vertex: V): Option[VisualVertex] = {
+  override protected def interactiveVertexEditing(graph: G, vertex: V): Option[V] = {
     val newNameInput = InputDialogs.askForString("Vertex name:", vertex.name, "Edit vertex")
 
     if (newNameInput.isEmpty) {
@@ -102,13 +102,13 @@ trait VertexNamingController[V <: VisualVertex with Named, L <: VisualLink] exte
     val nameAssignedToAnotherVertex =
       graph
         .vertexes
-        .exists(otherVertex => otherVertex.asInstanceOf[Named].name == newName && otherVertex.id != vertex.id)
+        .exists(otherVertex => otherVertex.name == newName && otherVertex.id != vertex.id)
 
     if (nameAssignedToAnotherVertex) {
       throw new IllegalArgumentException("The vertex name must be unique!")
     }
 
-    val newProblemVertex = vertex.nameCopy(name = newName).asInstanceOf[VisualVertex]
+    val newProblemVertex = vertex.nameCopy(name = newName)
 
     Some(newProblemVertex)
   }

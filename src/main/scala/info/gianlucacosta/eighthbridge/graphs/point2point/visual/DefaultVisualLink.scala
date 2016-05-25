@@ -49,8 +49,8 @@ case class DefaultVisualLink(
 
                               id: UUID = UUID.randomUUID()
 
-                            ) extends VisualLink {
-  override def visualCopy(internalPoints: List[Point2D], text: String, selected: Boolean, labelCenter: Option[Point2D]): VisualLink =
+                            ) extends VisualLink[DefaultVisualLink] {
+  override def visualCopy(internalPoints: List[Point2D], text: String, selected: Boolean, labelCenter: Option[Point2D]): DefaultVisualLink =
     copy(
       internalPoints = internalPoints,
       text = text,

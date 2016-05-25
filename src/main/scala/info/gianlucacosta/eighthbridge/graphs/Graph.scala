@@ -31,7 +31,7 @@ import java.util.UUID
   * @tparam L Link type
   * @tparam B Binding type
   */
-trait Graph[V <: Vertex, L <: Link, B <: Binding] {
+trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this: G =>
   def vertexes: Set[V]
 
   def links: Set[L]
@@ -48,7 +48,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding] {
     * @param bindings The new bindings
     * @return The resulting new graph
     */
-  protected def graphCopy(vertexes: Set[V] = vertexes, links: Set[L] = links, bindings: Set[B] = bindings): Graph[V, L, B]
+  protected def graphCopy(vertexes: Set[V] = vertexes, links: Set[L] = links, bindings: Set[B] = bindings): G
 
   @transient
   private lazy val vertexMap =
@@ -61,7 +61,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding] {
       .toMap
 
 
-  def addVertexes(vertexesToAdd: Set[V]): Graph[V, L, B] = {
+  def addVertexes(vertexesToAdd: Set[V]): G = {
     val newVertexes = vertexes ++ vertexesToAdd
 
     require(newVertexes.size == vertexes.size + vertexesToAdd.size,
@@ -75,7 +75,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding] {
     addVertexes(Set(vertex))
 
 
-  def replaceVertexes(replacingVertexes: Set[V]): Graph[V, L, B] = {
+  def replaceVertexes(replacingVertexes: Set[V]): G = {
     val newVertexes = vertexes.diff(replacingVertexes) ++ replacingVertexes
 
     require(
@@ -91,7 +91,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding] {
     replaceVertexes(Set(vertex))
 
 
-  def removeVertexes(vertexesToRemove: Set[V]): Graph[V, L, B] = {
+  def removeVertexes(vertexesToRemove: Set[V]): G = {
     val newVertexes = vertexes.diff(vertexesToRemove)
 
     require(
@@ -119,7 +119,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding] {
     removeVertexes(Set(vertex))
 
 
-  def bindLinks(bindingMapToAdd: Map[L, B]): Graph[V, L, B] = {
+  def bindLinks(bindingMapToAdd: Map[L, B]): G = {
     bindingMapToAdd.foreach {
       case (link, binding) =>
         require(link.id == binding.linkId, "Each binding must reference its associated link")
@@ -156,7 +156,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding] {
     bindLinks(Map(linkToAdd -> bindingToAdd))
 
 
-  def replaceLinks(replacingLinks: Set[L]): Graph[V, L, B] = {
+  def replaceLinks(replacingLinks: Set[L]): G = {
     val newLinks = links.diff(replacingLinks) ++ replacingLinks
 
     require(
@@ -172,7 +172,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding] {
     replaceLinks(Set(replacingLink))
 
 
-  def removeLinks(linksToRemove: Set[L]): Graph[V, L, B] = {
+  def removeLinks(linksToRemove: Set[L]): G = {
     val newLinks = links.diff(linksToRemove)
 
     require(newLinks.size == links.size - linksToRemove.size,

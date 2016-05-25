@@ -32,40 +32,40 @@ import scalafx.geometry.Point2D
   *
   * You can also employ one of the concrete subclasses provided by the package, or one of the mixin subtraits.
   */
-trait BasicController extends GraphCanvasController {
-  override def createBackgroundNode(): BackgroundNode =
+trait BasicController[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends GraphCanvasController[V, L, G] {
+  override def createBackgroundNode(): BackgroundNode[V, L, G] =
     new BasicBackgroundNode
 
 
-  override def createVertexNode(vertex: VisualVertex): VertexNode =
+  override def createVertexNode(vertex: V): VertexNode[V, L, G] =
     new BasicVertexNode()
 
 
-  override def createLinkNode(sourceVertex: VisualVertex, targetVertex: VisualVertex, link: VisualLink): LinkNode =
+  override def createLinkNode(sourceVertex: V, targetVertex: V, link: L): LinkNode[V, L, G] =
     new BasicLinkNode(sourceVertex.id, targetVertex.id)
 
 
-  def createVertex(graph: VisualGraph, center: Point2D): Option[VisualGraph]
+  def createVertex(graph: G, center: Point2D): Option[G]
 
-  def createLink(graph: VisualGraph, sourceVertex: VisualVertex, targetVertex: VisualVertex): Option[VisualGraph]
+  def createLink(graph: G, sourceVertex: V, targetVertex: V): Option[G]
 
-  def setVertexSelectedState(graph: VisualGraph, vertex: VisualVertex, selected: Boolean): Option[VisualGraph]
+  def setVertexSelectedState(graph: G, vertex: V, selected: Boolean): Option[G]
 
-  def setLinkSelectedState(graph: VisualGraph, link: VisualLink, selected: Boolean): Option[VisualGraph]
+  def setLinkSelectedState(graph: G, link: L, selected: Boolean): Option[G]
 
-  def setSelection(graph: VisualGraph, selectionVertexes: Set[VisualVertex], selectionLinks: Set[VisualLink]): Option[VisualGraph]
+  def setSelection(graph: G, selectionVertexes: Set[V], selectionLinks: Set[L]): Option[G]
 
-  def editVertex(graph: VisualGraph, vertex: VisualVertex): Option[VisualGraph]
+  def editVertex(graph: G, vertex: V): Option[G]
 
-  def editLink(graph: VisualGraph, link: VisualLink): Option[VisualGraph]
+  def editLink(graph: G, link: L): Option[G]
 
-  def dragSelection(graph: VisualGraph, delta: Point2D): Option[VisualGraph]
+  def dragSelection(graph: G, delta: Point2D): Option[G]
 
-  def createLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[VisualGraph]
+  def createLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G]
 
-  def canDragLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], oldInternalPoint: Point2D, newInternalPoint: Point2D): Boolean
+  def canDragLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], oldInternalPoint: Point2D, newInternalPoint: Point2D): Boolean
 
-  def deleteLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[VisualGraph]
+  def deleteLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G]
 
-  def dragLinkLabel(graph: VisualGraph, link: VisualLink, oldCenter: Point2D, newCenter: Point2D): Option[VisualGraph]
+  def dragLinkLabel(graph: G, link: L, oldCenter: Point2D, newCenter: Point2D): Option[G]
 }

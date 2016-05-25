@@ -23,7 +23,7 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 import java.util.UUID
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualLinkSettings}
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualLinkSettings, VisualVertex}
 import info.gianlucacosta.eighthbridge.util.fx.geometry.BoundsExtensions._
 import info.gianlucacosta.eighthbridge.util.fx.geometry.MouseEventExtensions._
 import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
@@ -42,7 +42,7 @@ import scalafx.scene.text.Text
   * @param sourceVertexId
   * @param targetVertexId
   */
-class BasicLinkNode(val sourceVertexId: UUID, val targetVertexId: UUID) extends Group with LinkNode {
+class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]](val sourceVertexId: UUID, val targetVertexId: UUID) extends Group with LinkNode[V, L, G] {
 
   private class LinkSegment(indexOfNewInternalPoint: Int, linkSettings: VisualLinkSettings) extends Segment {
     strokeWidth = linkSettings.lineSize
@@ -277,14 +277,14 @@ class BasicLinkNode(val sourceVertexId: UUID, val targetVertexId: UUID) extends 
   }
 
 
-  private var controller: BasicController = _
-  private var graph: VisualGraph = _
-  private var _link: VisualLink = _
+  private var controller: BasicController[V, L, G] = _
+  private var graph: G = _
+  private var _link: L = _
 
 
-  override def link: VisualLink = _link
+  override def link: L = _link
 
-  private def link_=(newLink: VisualLink): Unit = {
+  private def link_=(newLink: L): Unit = {
     _link = newLink
   }
 
@@ -302,8 +302,8 @@ class BasicLinkNode(val sourceVertexId: UUID, val targetVertexId: UUID) extends 
   children.add(label)
 
 
-  override def setup(controller: GraphCanvasController, graph: VisualGraph, link: VisualLink): Unit = {
-    this.controller = controller.asInstanceOf[BasicController]
+  override def setup(controller: GraphCanvasController[V, L, G], graph: G, link: L): Unit = {
+    this.controller = controller.asInstanceOf[BasicController[V, L, G]]
     this.graph = graph
     this.link = link
 

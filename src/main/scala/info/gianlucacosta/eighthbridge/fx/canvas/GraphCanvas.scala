@@ -24,7 +24,7 @@ import java.util.UUID
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.{InvalidationListener, Observable}
 
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualVertex, VisualLink}
 
 import scalafx.Includes._
 import scalafx.scene.input.{KeyCode, KeyEvent}
@@ -43,7 +43,7 @@ import scalafx.scene.shape.Rectangle
   * @param controller   The controller telling the canvas how to render components and how to react to user input
   * @param initialGraph The initial graph shown by the canvas
   */
-class GraphCanvas(controller: GraphCanvasController, initialGraph: VisualGraph) extends Pane {
+class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]](controller: GraphCanvasController[V, L, G], initialGraph: G) extends Pane {
   require(controller != null)
   require(initialGraph != null)
 
@@ -51,7 +51,7 @@ class GraphCanvas(controller: GraphCanvasController, initialGraph: VisualGraph) 
     * This property is set whenever a new graph is set- programmatically or via
     * user interaction.
     */
-  val graph = new SimpleObjectProperty[VisualGraph](initialGraph)
+  val graph = new SimpleObjectProperty[G](initialGraph)
 
   graph.addListener(new InvalidationListener {
     override def invalidated(observable: Observable): Unit = {
@@ -59,13 +59,13 @@ class GraphCanvas(controller: GraphCanvasController, initialGraph: VisualGraph) 
     }
   })
 
-  private val backgroundNode: BackgroundNode = controller.createBackgroundNode()
+  private val backgroundNode: BackgroundNode[V, L, G] = controller.createBackgroundNode()
   require(backgroundNode != null)
   backgroundNode.addGraphChangedListener(graph() = _)
   children.add(backgroundNode)
 
-  private var vertexNodes: Map[UUID, VertexNode] = Map()
-  private var linkNodes: Map[UUID, LinkNode] = Map()
+  private var vertexNodes: Map[UUID, VertexNode[V, L, G]] = Map()
+  private var linkNodes: Map[UUID, LinkNode[V, L, G]] = Map()
 
   focusTraversable = true
 

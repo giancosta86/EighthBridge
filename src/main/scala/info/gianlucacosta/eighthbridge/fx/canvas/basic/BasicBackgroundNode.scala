@@ -23,7 +23,7 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 import java.util.UUID
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 import info.gianlucacosta.eighthbridge.util.fx.geometry.DiagonalBounds
 import info.gianlucacosta.eighthbridge.util.fx.geometry.MouseEventExtensions._
 import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
@@ -37,15 +37,15 @@ import scalafx.scene.shape.Rectangle
 /**
   * Default, interactive implementation of BackgroundNode
   */
-class BasicBackgroundNode extends Group with BackgroundNode {
+class BasicBackgroundNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends Group with BackgroundNode[V, L, G] {
   private val SelectionRectangleMinSize = 2
   private val EmptySelectionBounds = new BoundingBox(0, 0, 0, 0)
 
-  private var controller: BasicController = _
-  private var graph: VisualGraph = _
+  private var controller: BasicController[V, L, G] = _
+  private var graph: G = _
 
-  private var vertexNodes: Map[UUID, BasicVertexNode] = _
-  private var linkNodes: Map[UUID, BasicLinkNode] = _
+  private var vertexNodes: Map[UUID, BasicVertexNode[V, L, G]] = _
+  private var linkNodes: Map[UUID, BasicLinkNode[V, L, G]] = _
 
   private var dragAnchor: Point2D = _
 
@@ -63,11 +63,11 @@ class BasicBackgroundNode extends Group with BackgroundNode {
   )
 
 
-  override def setup(controller: GraphCanvasController, graph: VisualGraph, vertexNodes: Map[UUID, VertexNode], linkNodes: Map[UUID, LinkNode]): Unit = {
-    this.controller = controller.asInstanceOf[BasicController]
+  override def setup(controller: GraphCanvasController[V, L, G], graph: G, vertexNodes: Map[UUID, VertexNode[V, L, G]], linkNodes: Map[UUID, LinkNode[V, L, G]]): Unit = {
+    this.controller = controller.asInstanceOf[BasicController[V, L, G]]
     this.graph = graph
-    this.vertexNodes = vertexNodes.asInstanceOf[Map[UUID, BasicVertexNode]]
-    this.linkNodes = linkNodes.asInstanceOf[Map[UUID, BasicLinkNode]]
+    this.vertexNodes = vertexNodes.asInstanceOf[Map[UUID, BasicVertexNode[V, L, G]]]
+    this.linkNodes = linkNodes.asInstanceOf[Map[UUID, BasicLinkNode[V, L, G]]]
 
     require(this.controller != null)
     require(this.graph != null)

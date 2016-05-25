@@ -20,18 +20,18 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas
 
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
 import scalafx.scene.Node
 
 /**
   * Generic JavaFX node rendering a graph component
   */
-trait GraphCanvasNode extends Node {
-  private var graphChangedListener: Option[VisualGraphChangedListener] = None
+trait GraphCanvasNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends Node {
+  private var graphChangedListener: Option[VisualGraphChangedListener[V, L, G]] = None
 
 
-  def addGraphChangedListener(listener: VisualGraphChangedListener): Unit = {
+  def addGraphChangedListener(listener: VisualGraphChangedListener[V, L, G]): Unit = {
     require(listener != null)
     require(graphChangedListener.isEmpty)
 
@@ -45,7 +45,7 @@ trait GraphCanvasNode extends Node {
     *
     * @param newGraph
     */
-  protected def notifyGraphChanged(newGraph: VisualGraph): Unit = {
+  protected def notifyGraphChanged(newGraph: G): Unit = {
     require(newGraph != null)
     graphChangedListener.foreach(_ (newGraph))
   }

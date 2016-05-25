@@ -30,8 +30,8 @@ import info.gianlucacosta.eighthbridge.util.fx.dialogs.InputDialogs
   * @tparam V Vertex
   * @tparam L Link
   */
-trait WeightLinkController[V <: VisualVertex, L <: VisualLink with Weighted] extends InteractiveEditingController[V, L] {
-  override protected def interactiveLinkEditing(graph: VisualGraph, link: L): Option[VisualLink] = {
+trait WeightLinkController[V <: VisualVertex[V], L <: VisualLink[L] with Weighted[L], G <: VisualGraph[V, L, G]] extends InteractiveEditingController[V, L, G] {
+  override protected def interactiveLinkEditing(graph: G, link: L): Option[L] = {
     val weightInputResult = InputDialogs.askForDouble("Weight:", link.weight, link.minWeight, link.maxWeight, "Edit link")
     if (weightInputResult.isEmpty) {
       return None
@@ -40,7 +40,7 @@ trait WeightLinkController[V <: VisualVertex, L <: VisualLink with Weighted] ext
     val newWeight = weightInputResult.get
 
     Some(
-      link.weightCopy(newWeight).asInstanceOf[VisualLink]
+      link.weightCopy(newWeight)
     )
   }
 }

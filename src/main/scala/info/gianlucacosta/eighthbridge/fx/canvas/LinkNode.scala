@@ -20,12 +20,12 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas
 
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink}
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
 /**
   * JavaFX node rendering a VisualLink
   */
-trait LinkNode extends GraphCanvasNode {
+trait LinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends GraphCanvasNode[V, L, G] {
   /**
     * Called by GraphCanvas at every rendering - before actually rendering any node
     *
@@ -34,9 +34,9 @@ trait LinkNode extends GraphCanvasNode {
     * @param link
     */
   def setup(
-             controller: GraphCanvasController,
-             graph: VisualGraph,
-             link: VisualLink)
+             controller: GraphCanvasController[V, L, G],
+             graph: G,
+             link: L)
 
-  def link: VisualLink
+  def link: L
 }

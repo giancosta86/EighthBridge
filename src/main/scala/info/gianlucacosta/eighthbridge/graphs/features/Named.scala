@@ -23,7 +23,7 @@ package info.gianlucacosta.eighthbridge.graphs.point2point.specific
 /**
   * Object having a name
   */
-trait Named {
+trait Named[T <: Named[T]] { this: T =>
   def name: String
 
   /**
@@ -34,5 +34,5 @@ trait Named {
     * @param name The new name
     * @return The resulting new object
     */
-  def nameCopy(name: String): Named
+  def nameCopy(name: String): T
 }

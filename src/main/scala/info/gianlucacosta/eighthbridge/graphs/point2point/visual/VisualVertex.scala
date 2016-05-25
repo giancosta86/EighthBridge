@@ -27,7 +27,7 @@ import scalafx.geometry.Point2D
 /**
   * A vertex for VisualGraph
   */
-trait VisualVertex extends Vertex {
+trait VisualVertex[V <: VisualVertex[V]] extends Vertex { this: V =>
   def center: Point2D
 
   def text: String
@@ -40,7 +40,7 @@ trait VisualVertex extends Vertex {
 
   def visualCopy(center: Point2D = center,
                  text: String = text,
-                 selected: Boolean = selected): VisualVertex
+                 selected: Boolean = selected): V
 
   override def toString: String = text
 }

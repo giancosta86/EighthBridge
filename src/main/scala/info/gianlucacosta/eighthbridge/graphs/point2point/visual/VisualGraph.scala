@@ -36,7 +36,7 @@ import scalafx.geometry.{Bounds, Dimension2D, Point2D}
   * (for example, getLinkedVertexes() or getEdgesBetween()) can actually interpret it
   * as an undirected graph.
   */
-trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
+trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends Graph[V, L, ArcBinding, G] { this: G =>
   def directed: Boolean
 
   def dimension: Dimension2D
@@ -45,10 +45,10 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
 
   def settings: VisualGraphSettings
 
-  def visualCopy(directed: Boolean = directed, dimension: Dimension2D = dimension, selectionBounds: Bounds = selectionBounds): VisualGraph
+  def visualCopy(directed: Boolean = directed, dimension: Dimension2D = dimension, selectionBounds: Bounds = selectionBounds): G
 
 
-  def bindLink(sourceVertex: VisualVertex, targetVertex: VisualVertex, link: VisualLink): VisualGraph = {
+  def bindLink(sourceVertex: V, targetVertex: V, link: L): G = {
     val binding = new ArcBinding(
       id = UUID.randomUUID(),
       sourceVertexId = sourceVertex.id,
@@ -61,12 +61,12 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
 
 
   @transient
-  lazy val selectedVertexes: Set[VisualVertex] =
+  lazy val selectedVertexes: Set[V] =
     vertexes.filter(vertex => vertex.selected)
 
 
   @transient
-  lazy val selectedLinks: Set[VisualLink] =
+  lazy val selectedLinks: Set[L] =
     links.filter(link => link.selected)
 
 
@@ -85,8 +85,7 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
     selectedVertexes.isEmpty && selectedLinks.isEmpty
 
 
-  def setSelection(selectionVertexes: Set[VisualVertex] = Set(), selectionLinks: Set[VisualLink] = Set()): VisualGraph =
-
+  def setSelection(selectionVertexes: Set[V] = Set(), selectionLinks: Set[L] = Set()): G  =
     replaceVertexes(
       vertexes.map(vertex =>
         vertex.visualCopy(selected = selectionVertexes.contains(vertex))
@@ -99,7 +98,8 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
       )
 
 
-  def moveSelectedVertexesBy(delta: Point2D): VisualGraph =
+
+  def moveSelectedVertexesBy(delta: Point2D): G =
     replaceVertexes(selectedVertexes.map(vertex => {
       val newCenter = (vertex.center + delta).clip(dimension)
 
@@ -113,7 +113,7 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
     * @param vertex
     * @return
     */
-  def enteringVertexes(vertex: VisualVertex): Set[VisualVertex] =
+  def enteringVertexes(vertex: V): Set[V] =
     bindings
       .filter(binding => binding.targetVertexId == vertex.id)
       .map(binding => getVertex(binding.sourceVertexId).get)
@@ -125,7 +125,7 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
     * @param vertex
     * @return
     */
-  def exitingVertexes(vertex: VisualVertex): Set[VisualVertex] =
+  def exitingVertexes(vertex: V): Set[V] =
     bindings
       .filter(binding => binding.sourceVertexId == vertex.id)
       .map(binding => getVertex(binding.targetVertexId).get)
@@ -137,11 +137,11 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
     * @param vertex
     * @return
     */
-  def linkedVertexes(vertex: VisualVertex): Set[VisualVertex] =
+  def linkedVertexes(vertex: V): Set[V] =
     enteringVertexes(vertex) ++ exitingVertexes(vertex)
 
 
-  def getEdgesBetween(linkVertexes: Set[_ <: VisualVertex]): Set[VisualLink] = {
+  def getEdgesBetween(linkVertexes: Set[V]): Set[L] = {
     bindings
       .filter(binding =>
         binding.vertexIds == linkVertexes.map(_.id)
@@ -150,7 +150,7 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
   }
 
 
-  def getArcsBetween(sourceVertex: VisualVertex, targetVertex: VisualVertex): Set[VisualLink] =
+  def getArcsBetween(sourceVertex: V, targetVertex: V): Set[L] =
     bindings
       .filter(binding =>
         binding.sourceVertexId == sourceVertex.id
@@ -158,47 +158,4 @@ trait VisualGraph extends Graph[VisualVertex, VisualLink, ArcBinding] {
           binding.targetVertexId == targetVertex.id
       )
       .map(binding => getLink(binding.linkId).get)
-
-
-  /*
-  Overridden methods
-   */
-
-  protected override def graphCopy(vertexes: Set[VisualVertex], links: Set[VisualLink] = links, bindings: Set[ArcBinding] = bindings): VisualGraph
-
-  override def addVertexes(vertexesToAdd: Set[VisualVertex]): VisualGraph =
-    super.addVertexes(vertexesToAdd).asInstanceOf[VisualGraph]
-
-  override def addVertex(vertex: VisualVertex): VisualGraph =
-    super.addVertex(vertex).asInstanceOf[VisualGraph]
-
-  override def replaceVertexes(replacingVertexes: Set[VisualVertex]): VisualGraph =
-    super.replaceVertexes(replacingVertexes).asInstanceOf[VisualGraph]
-
-  override def replaceVertex(vertex: VisualVertex): VisualGraph =
-    super.replaceVertex(vertex).asInstanceOf[VisualGraph]
-
-  override def removeVertexes(vertexesToRemove: Set[VisualVertex]): VisualGraph =
-    super.removeVertexes(vertexesToRemove).asInstanceOf[VisualGraph]
-
-  override def removeVertex(vertex: VisualVertex): VisualGraph =
-    super.removeVertex(vertex).asInstanceOf[VisualGraph]
-
-  override def bindLinks(bindingMapToAdd: Map[VisualLink, ArcBinding]): VisualGraph =
-    super.bindLinks(bindingMapToAdd).asInstanceOf[VisualGraph]
-
-  override def bindLink(linkToAdd: VisualLink, bindingToAdd: ArcBinding): VisualGraph =
-    super.bindLink(linkToAdd, bindingToAdd).asInstanceOf[VisualGraph]
-
-  override def replaceLinks(replacingLinks: Set[VisualLink]): VisualGraph =
-    super.replaceLinks(replacingLinks).asInstanceOf[VisualGraph]
-
-  override def replaceLink(replacingLink: VisualLink): VisualGraph =
-    super.replaceLink(replacingLink).asInstanceOf[VisualGraph]
-
-  override def removeLinks(linksToRemove: Set[VisualLink]): VisualGraph =
-    super.removeLinks(linksToRemove).asInstanceOf[VisualGraph]
-
-  override def removeLink(linkToRemove: VisualLink): VisualGraph =
-    super.removeLink(linkToRemove).asInstanceOf[VisualGraph]
 }

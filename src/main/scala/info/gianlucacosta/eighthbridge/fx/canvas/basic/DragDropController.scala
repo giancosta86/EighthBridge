@@ -27,21 +27,21 @@ import scalafx.geometry.Point2D
 /**
   * Interactive controller only supporting selection of vertexes/links, as well as drag & drop
   */
-class DragDropController extends BasicController {
-  override def createVertex(graph: VisualGraph, center: Point2D): Option[VisualGraph] =
+class DragDropController[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L,G] {
+  override def createVertex(graph: G, center: Point2D): Option[G] =
     None
 
-  override def createLink(graph: VisualGraph, sourceVertex: VisualVertex, targetVertex: VisualVertex): Option[VisualGraph] =
+  override def createLink(graph: G, sourceVertex: V, targetVertex: V): Option[G] =
     None
 
 
-  override def setSelection(graph: VisualGraph, selectionVertexes: Set[VisualVertex], selectionLinks: Set[VisualLink]): Option[VisualGraph] =
+  override def setSelection(graph: G, selectionVertexes: Set[V], selectionLinks: Set[L]): Option[G] =
     Some(
       graph.setSelection(selectionVertexes, selectionLinks)
     )
 
 
-  override def setVertexSelectedState(graph: VisualGraph, vertex: VisualVertex, selected: Boolean): Option[VisualGraph] =
+  override def setVertexSelectedState(graph: G, vertex: V, selected: Boolean): Option[G] =
     Some(
       graph.replaceVertex(
         vertex.visualCopy(selected = selected)
@@ -49,39 +49,39 @@ class DragDropController extends BasicController {
     )
 
 
-  override def setLinkSelectedState(graph: VisualGraph, link: VisualLink, selected: Boolean): Option[VisualGraph] =
+  override def setLinkSelectedState(graph: G, link: L, selected: Boolean): Option[G] =
     Some(
       graph.replaceLink(
         link.visualCopy(selected = selected)
       )
     )
 
-  override def editVertex(graph: VisualGraph, vertex: VisualVertex): Option[VisualGraph] =
+  override def editVertex(graph: G, vertex: V): Option[G] =
     None
 
 
-  override def editLink(graph: VisualGraph, link: VisualLink): Option[VisualGraph] =
+  override def editLink(graph: G, link: L): Option[G] =
     None
 
 
-  override def dragSelection(graph: VisualGraph, delta: Point2D): Option[VisualGraph] =
+  override def dragSelection(graph: G, delta: Point2D): Option[G] =
     Some(
       graph.moveSelectedVertexesBy(delta)
     )
 
-  override def deleteSelection(graph: VisualGraph): Option[VisualGraph] =
+  override def deleteSelection(graph: G): Option[G] =
     None
 
-  override def createLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[VisualGraph] =
+  override def createLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] =
     None
 
-  override def deleteLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[VisualGraph] =
+  override def deleteLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] =
     None
 
-  override def canDragLinkInternalPoint(graph: VisualGraph, link: VisualLink, newInternalPoints: List[Point2D], oldInternalPoint: Point2D, newInternalPoint: Point2D): Boolean =
+  override def canDragLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], oldInternalPoint: Point2D, newInternalPoint: Point2D): Boolean =
     true
 
-  override def dragLinkLabel(graph: VisualGraph, link: VisualLink, oldCenter: Point2D, newCenter: Point2D): Option[VisualGraph] = {
+  override def dragLinkLabel(graph: G, link: L, oldCenter: Point2D, newCenter: Point2D): Option[G] = {
     val newLink = link.visualCopy(
       labelCenter = Some(
         newCenter

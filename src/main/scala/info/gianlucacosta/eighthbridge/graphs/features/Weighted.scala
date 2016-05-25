@@ -20,12 +20,13 @@
 
 package info.gianlucacosta.eighthbridge.graphs.point2point.specific
 
+import info.gianlucacosta.eighthbridge.graphs.Link
 import info.gianlucacosta.eighthbridge.util.Numbers
 
 /**
   * Object having a weight
   */
-trait Weighted {
+trait Weighted[T <: Weighted[T]] { this: T =>
   def minWeight: Double
 
   def maxWeight: Double
@@ -50,5 +51,5 @@ trait Weighted {
     * @param weight The new weight
     * @return The resulting new object
     */
-  def weightCopy(weight: Double): Weighted
+  def weightCopy(weight: Double): T
 }

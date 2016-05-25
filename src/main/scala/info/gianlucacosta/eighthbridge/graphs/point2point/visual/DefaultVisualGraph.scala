@@ -35,22 +35,22 @@ import scalafx.geometry.{BoundingBox, Bounds, Dimension2D}
   * @param links
   * @param bindings
   */
-case class DefaultVisualGraph(directed: Boolean,
+case class DefaultVisualGraph[V <: VisualVertex[V], L <: VisualLink[L]](directed: Boolean,
                               dimension: Dimension2D,
                               selectionBounds: Bounds = new BoundingBox(0, 0, 0, 0),
                               settings: VisualGraphSettings = VisualGraphDefaultSettings,
-                              vertexes: Set[VisualVertex] = Set(),
-                              links: Set[VisualLink] = Set(),
-                              bindings: Set[ArcBinding] = Set()) extends VisualGraph {
+                              vertexes: Set[V] = Set[V](),
+                              links: Set[L] = Set[L](),
+                              bindings: Set[ArcBinding] = Set[ArcBinding]()) extends VisualGraph[V, L, DefaultVisualGraph[V, L]] {
 
-  override def visualCopy(directed: Boolean, dimension: Dimension2D, selectionBounds: Bounds): DefaultVisualGraph =
+  override def visualCopy(directed: Boolean, dimension: Dimension2D, selectionBounds: Bounds): DefaultVisualGraph[V, L] =
     copy(
       directed = directed,
       dimension = dimension,
       selectionBounds = selectionBounds
     )
 
-  override def graphCopy(vertexes: Set[VisualVertex], links: Set[VisualLink], bindings: Set[ArcBinding]): DefaultVisualGraph =
+  override def graphCopy(vertexes: Set[V], links: Set[L], bindings: Set[ArcBinding]): DefaultVisualGraph[V, L] =
     copy(
       vertexes = vertexes,
       links = links,
