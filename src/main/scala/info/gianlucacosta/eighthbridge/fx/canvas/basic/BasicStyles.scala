@@ -18,17 +18,8 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.graphs.point2point.visual
+package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import scalafx.scene.paint.Color
-
-object VisualVertexDefaultSettings extends VisualVertexSettings(
-  background = Color.valueOf("#fbf6ce"),
-  borderSize = 1,
-  borderColor = Color.Black,
-  fontName = "Arial",
-  fontSize = 14,
-  fontColor = Color.Black,
-  padding = 8,
-  rounding = 16
-)
+object BasicStyles {
+  val stylesheet = getClass.getResource("BasicStyles.css").toExternalForm
+}

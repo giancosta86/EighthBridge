@@ -32,7 +32,7 @@ import scalafx.geometry.Point2D
   *
   * You can also employ one of the concrete subclasses provided by the package, or one of the mixin subtraits.
   */
-trait BasicController[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends GraphCanvasController[V, L, G] {
+trait BasicController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends GraphCanvasController[V, L, G] {
   override def createBackgroundNode(): BackgroundNode[V, L, G] =
     new BasicBackgroundNode
 

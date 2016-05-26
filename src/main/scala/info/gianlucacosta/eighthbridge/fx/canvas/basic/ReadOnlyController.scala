@@ -27,7 +27,7 @@ import scalafx.geometry.Point2D
 /**
   * Controller only showing a graph - totally preventing interactivity
   */
-class ReadOnlyController[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
+class ReadOnlyController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
   override def createVertex(graph: G, center: Point2D): Option[G] =
     None
 

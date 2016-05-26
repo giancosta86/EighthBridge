@@ -18,36 +18,33 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.graphs.point2point.visual
+package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 import java.util.UUID
 
-import scalafx.geometry.Point2D
+import scalafx.geometry.{Point2D}
 
 /**
-  * Default VisualLink implementation
-  *
-  * @param internalPoints
-  * @param selected
-  * @param labelCenter
-  * @param id
+  * Default BasicLink implementation
   */
-case class DefaultVisualLink(
-                              internalPoints: List[Point2D] = Nil,
+case class DefaultBasicLink(
+                            text: String = "",
+                            arrow: LinkArrow = LinkArrow(),
+                            handleRadius: LinkHandleRadius = LinkHandleRadius(),
+                            styleClass: String = "",
+                            internalPoints: List[Point2D] = List(),
+                            selected: Boolean = false,
+                            labelCenter: Option[Point2D] = None,
+                            id: UUID = UUID.randomUUID()
+                          ) extends BasicLink[DefaultBasicLink] {
 
-                              styleClass: String = "",
 
-                              selected: Boolean = false,
-
-                              labelCenter: Option[Point2D] = None,
-
-                              id: UUID = UUID.randomUUID()
-
-                            ) extends VisualLink[DefaultVisualLink] {
-  override def visualCopy(internalPoints: List[Point2D], selected: Boolean, labelCenter: Option[Point2D]): DefaultVisualLink =
+  override def visualCopy(internalPoints: List[Point2D], selected: Boolean, labelCenter: Option[Point2D]): DefaultBasicLink =
     copy(
       internalPoints = internalPoints,
       selected = selected,
       labelCenter = labelCenter
     )
+
+  override def toString: String = text
 }

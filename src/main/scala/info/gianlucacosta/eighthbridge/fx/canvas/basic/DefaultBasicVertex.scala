@@ -18,25 +18,32 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.graphs.point2point.visual
+package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import scalafx.scene.paint.Color
+import java.util.UUID
 
-object VisualLinkDefaultSettings extends VisualLinkSettings(
-  lineColor = Color.valueOf("#9fecf3"),
-  lineSize = 5,
-  fontName = "Arial",
-  fontSize = 14,
-  fontColor = Color.Black,
 
-  arrowRelativePosition = 0.75,
-  arrowAngle = math.Pi / 6,
-  arrowLength = 15,
+import scalafx.geometry.Point2D
 
-  handleRadiusX = 6,
-  handleRadiusY = 6,
-  handleColor = Color.valueOf("#9fecf3"),
+/**
+  * Default BasicVertex implementation
+  */
+case class DefaultBasicVertex(
+                              padding: Double = 8,
+                              text: String = "",
+                              styleClass: String = "",
+                              center: Point2D = Point2D.Zero,
+                              selected: Boolean = false,
+                              id: UUID = UUID.randomUUID()
+                            ) extends BasicVertex[DefaultBasicVertex] {
 
-  labelConnectorColor = Color.Maroon,
-  labelConnectorDashArray = List(15.0, 10.0)
-)
+
+  override def visualCopy(center: Point2D, selected: Boolean): DefaultBasicVertex =
+    copy(
+      center = center,
+      selected = selected
+    )
+
+  override val toString: String = text
+}
+

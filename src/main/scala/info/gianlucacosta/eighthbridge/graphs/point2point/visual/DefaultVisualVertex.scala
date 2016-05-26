@@ -28,28 +28,20 @@ import scalafx.geometry.Point2D
   * Default VisualVertex implementation
   *
   * @param center
-  * @param text
   * @param selected
-  * @param settings
-  * @param selectedSettings
   * @param id
   */
 case class DefaultVisualVertex(
                                 center: Point2D,
 
-                                text: String = "",
+                                styleClass: String = "",
 
                                 selected: Boolean = false,
-
-                                settings: VisualVertexSettings = VisualVertexDefaultSettings,
-
-                                selectedSettings: VisualVertexSettings = VisualVertexDefaultSelectedSettings,
 
                                 id: UUID = UUID.randomUUID()
                               ) extends VisualVertex[DefaultVisualVertex] {
 
-  override def visualCopy(center: Point2D, text: String, selected: Boolean): DefaultVisualVertex =
+  override def visualCopy(center: Point2D, selected: Boolean): DefaultVisualVertex =
     copy(center = center,
-      text = text,
       selected = selected)
 }

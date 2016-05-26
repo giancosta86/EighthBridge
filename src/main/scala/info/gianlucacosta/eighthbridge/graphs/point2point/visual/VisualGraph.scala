@@ -43,8 +43,6 @@ trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
 
   def selectionBounds: Bounds
 
-  def settings: VisualGraphSettings
-
   def visualCopy(directed: Boolean = directed, dimension: Dimension2D = dimension, selectionBounds: Bounds = selectionBounds): G
 
 

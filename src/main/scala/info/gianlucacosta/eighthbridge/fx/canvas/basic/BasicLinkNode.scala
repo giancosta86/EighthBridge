@@ -23,18 +23,24 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 import java.util.UUID
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualLinkSettings, VisualVertex}
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 import info.gianlucacosta.eighthbridge.util.fx.geometry.BoundsExtensions._
 import info.gianlucacosta.eighthbridge.util.fx.geometry.MouseEventExtensions._
 import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
 import info.gianlucacosta.eighthbridge.util.fx.geometry._
 
 import scalafx.Includes._
+import scalafx.css.PseudoClass
 import scalafx.geometry.{Point2D, VPos}
 import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape._
 import scalafx.scene.text.Text
+
+
+object BasicLinkNode {
+  private val SelectedPseudoClass = PseudoClass("selected")
+}
 
 /**
   * Default, interactive implementation of LinkNode
@@ -42,11 +48,10 @@ import scalafx.scene.text.Text
   * @param sourceVertexId
   * @param targetVertexId
   */
-class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]](val sourceVertexId: UUID, val targetVertexId: UUID) extends Group with LinkNode[V, L, G] {
+class BasicLinkNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]](val sourceVertexId: UUID, val targetVertexId: UUID) extends Group with LinkNode[V, L, G] {
+  private class LinkSegment(indexOfNewInternalPoint: Int) extends Segment {
+    styleClass.add("line")
 
-  private class LinkSegment(indexOfNewInternalPoint: Int, linkSettings: VisualLinkSettings) extends Segment {
-    strokeWidth = linkSettings.lineSize
-    stroke = linkSettings.lineColor
     strokeLineCap = StrokeLineCap.ROUND
 
     handleEvent(MouseEvent.MousePressed) {
@@ -74,15 +79,17 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
     }
   }
 
-  private class LinkArrow(segment: LinkSegment, linkSettings: VisualLinkSettings) extends Group {
+  private class LinkArrow(segment: LinkSegment) extends Group {
+    styleClass.add("line")
+
     private val leftSegment = new Line()
     private val rightSegment = new Line()
 
     children.addAll(leftSegment, rightSegment)
 
-    val relativePosition = linkSettings.arrowRelativePosition
-    val angle = linkSettings.arrowAngle
-    val length = linkSettings.arrowLength
+    val relativePosition = link.arrow.relativePosition
+    val angle = link.arrow.angle
+    val length = link.arrow.length
 
     val startPoint = segment.startPoint
     val stopPoint = segment.endPoint
@@ -130,16 +137,12 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
     rightSegment.startY = anchor.y
     rightSegment.endX = rightEndX
     rightSegment.endY = rightEndY
-
-    leftSegment.strokeWidth = linkSettings.lineSize
-    leftSegment.stroke = linkSettings.lineColor
-
-    rightSegment.strokeWidth = linkSettings.lineSize
-    rightSegment.stroke = linkSettings.lineColor
   }
 
 
   private class InternalPointHandle(initialCenter: Point2D) extends Ellipse {
+    styleClass.add("internalPointHandle")
+
     opacity <== when(hover) choose 1 otherwise 0
 
     def center: Point2D = new Point2D(
@@ -153,10 +156,9 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
     }
 
 
-    def render(linkSettings: VisualLinkSettings): Unit = {
-      radiusX = linkSettings.handleRadiusX
-      radiusY = linkSettings.handleRadiusY
-      fill = linkSettings.handleColor
+    def render(): Unit = {
+      radiusX = link.handleRadius.x
+      radiusY = link.handleRadius.y
     }
 
     center = initialCenter
@@ -220,12 +222,11 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
 
 
   private class LinkLabelConnector extends Line {
+    styleClass.add("labelConnector")
+
     visible = false
 
-    def render(linkSettings: VisualLinkSettings, labelCenter: Point2D, linkJoinPoint: Point2D): Unit = {
-      stroke = linkSettings.labelConnectorColor
-      strokeDashArray = linkSettings.labelConnectorDashArray.asInstanceOf[List[java.lang.Double]]
-
+    def render(labelCenter: Point2D, linkJoinPoint: Point2D): Unit = {
       startX = labelCenter.x
       startY = labelCenter.y
       linkLabelConnector.endX = linkJoinPoint.x
@@ -235,6 +236,8 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
 
 
   private class LinkLabel extends Text {
+    styleClass.add("label")
+
     textOrigin = VPos.Top
 
     handleEvent(MouseEvent.MouseDragged) {
@@ -263,10 +266,7 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
       }
     }
 
-    def render(linkSettings: VisualLinkSettings, labelCenter: Point2D): Unit = {
-      fill = linkSettings.fontColor
-      font = linkSettings.font
-
+    def render(labelCenter: Point2D): Unit = {
       text = link.text
 
       val textBounds = label.boundsInLocal.value
@@ -398,12 +398,13 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
 
 
   override def render(): Unit = {
-    val settings =
-      if (link.selected) {
-        link.selectedSettings
-      } else {
-        link.settings
-      }
+    styleClass.setAll("link")
+
+    if (link.styleClass.nonEmpty) {
+      styleClass.add(link.styleClass)
+    }
+
+    this.pseudoClassStateChanged(BasicLinkNode.SelectedPseudoClass, link.selected)
 
 
     val sourceVertex = graph.getVertex(sourceVertexId).get
@@ -431,7 +432,7 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
 
 
     segments = (sourcePoints zip targetPoints).zipWithIndex.map { case ((sourcePoint, targetPoint), internalPointIndex) =>
-      val newSegment = new LinkSegment(internalPointIndex, settings) {
+      val newSegment = new LinkSegment(internalPointIndex) {
         startPoint = sourcePoint
         endPoint = targetPoint
       }
@@ -446,7 +447,7 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
         children.remove(arrow)
       }
 
-      arrow = new LinkArrow(segments.last, settings)
+      arrow = new LinkArrow(segments.last)
 
       children.add(1 + segments.size, arrow)
     }
@@ -472,12 +473,12 @@ class BasicLinkNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V
         newHandle
       })
 
-      handle.render(settings)
+      handle.render()
     })
 
 
-    label.render(settings, labelCenter)
+    label.render(labelCenter)
 
-    linkLabelConnector.render(settings, labelCenter, labelConnectorLinkJoinPoint)
+    linkLabelConnector.render(labelCenter, labelConnectorLinkJoinPoint)
   }
 }

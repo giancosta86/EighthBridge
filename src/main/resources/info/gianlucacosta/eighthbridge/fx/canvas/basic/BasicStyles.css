@@ -1,0 +1,83 @@
+/*------------
+ * BACKGROUND
+ *------------*/
+
+
+.graph > .backgroundRectangle {
+    -fx-fill: white;
+}
+
+
+.graph > .selectionRectangle {
+    -fx-fill: #e5ffe0;
+}
+
+
+/*----------
+ * VERTEXES
+ *----------*/
+
+.vertex > .body {
+    -fx-stroke: black;
+    -fx-stroke-width: 1;
+
+    -fx-fill: #fbf6ce;
+
+    -fx-arc-width: 16;
+    -fx-arc-height: 16;
+}
+
+.vertex > .label {
+    -fx-font: 14 Arial;
+    -fx-fill: black;
+}
+
+
+/*---------------------
+ * VERTEXES - SELECTED
+ *---------------------*/
+
+
+.vertex:selected > .body {
+    -fx-fill: #ffce5a;
+}
+
+
+/*-------
+ * LINKS
+ *-------*/
+
+
+.link > .line {
+    -fx-stroke: #9fecf3;
+    -fx-stroke-width: 5;
+}
+
+
+.link > .internalPointHandle {
+    -fx-fill: #9fecf3;
+}
+
+.link > .labelConnector {
+    -fx-stroke: maroon;
+    -fx-stroke-dash-array: 15 10;
+}
+
+
+.link > .label {
+    -fx-font: 14 Arial;
+    -fx-fill: black;
+}
+
+
+/*------------------
+ * LINKS - SELECTED
+ *------------------*/
+
+ .link:selected > .line {
+     -fx-stroke: #18ab00;
+ }
+
+ .link:selected > .internalPointHandle {
+     -fx-fill: #18ab00;
+ }

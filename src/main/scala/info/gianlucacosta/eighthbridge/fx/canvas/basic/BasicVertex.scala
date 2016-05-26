@@ -18,11 +18,14 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.graphs.point2point.visual
+package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import scalafx.scene.paint.Color
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualVertex
 
-object VisualGraphDefaultSettings extends VisualGraphSettings(
-  background = Color.White,
-  selectionColor = Color.valueOf("#e5ffe0")
-)
+/**
+  * Vertex dedicated to the "basic" package
+  */
+trait BasicVertex[V <: BasicVertex[V]] extends VisualVertex[V] { this: V =>
+  val text: String
+  val padding: Double
+}

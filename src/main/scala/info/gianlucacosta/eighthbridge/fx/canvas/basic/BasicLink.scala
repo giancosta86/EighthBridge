@@ -18,17 +18,15 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.graphs.point2point.visual
+package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import scalafx.scene.paint.Color
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualLink
 
-object VisualVertexDefaultSelectedSettings extends VisualVertexSettings(
-  background = Color.valueOf("#ffce5a"),
-  borderSize = 1,
-  borderColor = Color.Black,
-  fontName = "Arial",
-  fontSize = 14,
-  fontColor = Color.Black,
-  padding = 8,
-  rounding = 16
-)
+/**
+  * Link dedicated to the "basic" package
+  */
+trait BasicLink[L <: BasicLink[L]] extends VisualLink[L] { this: L =>
+  val text: String
+  val arrow: LinkArrow
+  val handleRadius: LinkHandleRadius
+}

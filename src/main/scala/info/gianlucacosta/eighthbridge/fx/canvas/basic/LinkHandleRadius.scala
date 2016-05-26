@@ -18,34 +18,12 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.graphs.point2point.visual
-
-import scalafx.scene.paint.Color
-import scalafx.scene.text.Font
+package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 /**
-  * Settings for VisualVertex
-  *
-  * @param background
-  * @param borderSize
-  * @param borderColor
-  * @param fontName
-  * @param fontSize
-  * @param fontColor
-  * @param padding
-  * @param rounding
+  * Link internal point handle settings
   */
-case class VisualVertexSettings(
-                                 background: Color,
-                                 borderSize: Double,
-                                 borderColor: Color,
-                                 fontName: String,
-                                 fontSize: Double,
-                                 fontColor: Color,
-                                 padding: Double,
-                                 rounding: Double
-                               ) {
-
-  @transient
-  lazy val font = new Font(fontName, fontSize)
-}
+case class LinkHandleRadius(
+                             x: Double = 6,
+                             y: Double = 6
+                           )

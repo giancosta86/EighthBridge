@@ -27,7 +27,7 @@ import scalafx.geometry.Point2D
 /**
   * Interactive controller only supporting selection of vertexes/links, as well as drag & drop
   */
-class DragDropController[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L,G] {
+class DragDropController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
   override def createVertex(graph: G, center: Point2D): Option[G] =
     None
 

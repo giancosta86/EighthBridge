@@ -20,7 +20,7 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic.editing
 
-import info.gianlucacosta.eighthbridge.fx.canvas.basic.BasicController
+import info.gianlucacosta.eighthbridge.fx.canvas.basic.{BasicController, BasicLink, BasicVertex}
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 import info.gianlucacosta.eighthbridge.util.fx.dialogs.Alerts
 
@@ -32,7 +32,7 @@ import scalafx.geometry.Point2D
   * @tparam V Vertex
   * @tparam L Link
   */
-trait InteractiveEditingController[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
+trait InteractiveEditingController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
   override def setVertexSelectedState(graph: G, vertex: V, selected: Boolean): Option[G] =
     Some(
       graph.replaceVertex(vertex.visualCopy(selected = selected))

@@ -20,22 +20,33 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.css._
+import javafx.css.StyleablePropertyFactory.SimpleCssMetaData
+
 import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 import info.gianlucacosta.eighthbridge.util.fx.geometry.MouseEventExtensions._
 import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
 
 import scalafx.Includes._
+import scalafx.beans.property.DoubleProperty
+import scalafx.css.PseudoClass
 import scalafx.geometry.{Point2D, VPos}
 import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.text.Text
 
+object BasicVertexNode {
+  private val SelectedPseudoClass = PseudoClass("selected")
+  private val DefaultPadding = 0d
+}
+
 /**
   * Default, interactive implementation of VertexNode
   */
-class BasicVertexNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends Group with VertexNode[V, L, G] {
+class BasicVertexNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends Group with VertexNode[V, L, G] {
   private var controller: BasicController[V, L, G] = _
   private var graph: G = _
   private var _vertex: V = _
@@ -48,11 +59,16 @@ class BasicVertexNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph
 
   private var dragAnchor: Point2D = _
 
-  private val labelTextBox = new Text {
+  private val label = new Text {
+    styleClass.add("label")
+
     textOrigin = VPos.Top
   }
-  private val vertexBox = new Rectangle
-  children.addAll(vertexBox, labelTextBox)
+
+  private val body = new Rectangle {
+    styleClass.add("body")
+  }
+  children.addAll(body, label)
 
 
   override def setup(controller: GraphCanvasController[V, L, G], graph: G, vertex: V): Unit = {
@@ -66,41 +82,36 @@ class BasicVertexNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph
   }
 
 
+
   override def render(): Unit = {
-    val settings =
-      if (vertex.selected) {
-        vertex.selectedSettings
-      } else {
-        vertex.settings
-      }
+    styleClass.setAll("vertex")
 
-    labelTextBox.font = settings.font
-    labelTextBox.text = vertex.text
-    labelTextBox.fill = settings.fontColor
-    labelTextBox.strokeWidth = 0
+    if (vertex.styleClass.nonEmpty) {
+      styleClass.add(vertex.styleClass)
+    }
 
-    val textBounds = labelTextBox.getBoundsInParent
+    this.pseudoClassStateChanged(BasicVertexNode.SelectedPseudoClass, vertex.selected)
+
+
+    label.text = vertex.text
+    label.strokeWidth = 0
+
+    val textBounds = label.getBoundsInParent
     val labelWidth = textBounds.getWidth
     val labelHeight = textBounds.getHeight
 
     val labelX = vertex.center.x - labelWidth / 2
     val labelY = vertex.center.y - labelHeight / 2
 
-    labelTextBox.x = labelX
-    labelTextBox.y = labelY
+    label.x = labelX
+    label.y = labelY
 
-    val padding = settings.padding
+    val padding = vertex.padding
 
-    vertexBox.fill = settings.background
-    vertexBox.strokeWidth = settings.borderSize
-    vertexBox.stroke = settings.borderColor
-
-    vertexBox.width = labelWidth + 2 * padding
-    vertexBox.height = labelHeight + 2 * padding
-    vertexBox.layoutX = labelX - padding
-    vertexBox.layoutY = labelY - padding
-    vertexBox.arcWidth = settings.rounding
-    vertexBox.arcHeight = settings.rounding
+    body.width = labelWidth + 2 * padding
+    body.height = labelHeight + 2 * padding
+    body.layoutX = labelX - padding
+    body.layoutY = labelY - padding
   }
 
 

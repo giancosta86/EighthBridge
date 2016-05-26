@@ -30,17 +30,10 @@ import scalafx.geometry.Point2D
 trait VisualVertex[V <: VisualVertex[V]] extends Vertex { this: V =>
   def center: Point2D
 
-  def text: String
+  def styleClass: String
 
   def selected: Boolean
 
-  def settings: VisualVertexSettings
-
-  def selectedSettings: VisualVertexSettings
-
   def visualCopy(center: Point2D = center,
-                 text: String = text,
                  selected: Boolean = selected): V
-
-  override def toString: String = text
 }

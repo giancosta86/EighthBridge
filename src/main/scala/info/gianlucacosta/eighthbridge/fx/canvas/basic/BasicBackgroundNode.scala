@@ -37,7 +37,9 @@ import scalafx.scene.shape.Rectangle
 /**
   * Default, interactive implementation of BackgroundNode
   */
-class BasicBackgroundNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends Group with BackgroundNode[V, L, G] {
+class BasicBackgroundNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends Group with BackgroundNode[V, L, G] {
+  styleClass.add("graph")
+
   private val SelectionRectangleMinSize = 2
   private val EmptySelectionBounds = new BoundingBox(0, 0, 0, 0)
 
@@ -51,11 +53,14 @@ class BasicBackgroundNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualG
 
 
   private val backgroundRectangle = new Rectangle {
+    styleClass.add("backgroundRectangle")
     x = 0
     y = 0
   }
 
-  private val selectionRectangle = new Rectangle
+  private val selectionRectangle = new Rectangle {
+    styleClass.add("selectionRectangle")
+  }
 
   children.addAll(
     backgroundRectangle,
@@ -77,11 +82,9 @@ class BasicBackgroundNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualG
 
 
   override def render() {
-    backgroundRectangle.fill = graph.settings.background
     backgroundRectangle.width = graph.dimension.width
     backgroundRectangle.height = graph.dimension.height
 
-    selectionRectangle.fill = graph.settings.selectionColor
     selectionRectangle.x = graph.selectionBounds.minX
     selectionRectangle.y = graph.selectionBounds.minY
     selectionRectangle.width = graph.selectionBounds.width

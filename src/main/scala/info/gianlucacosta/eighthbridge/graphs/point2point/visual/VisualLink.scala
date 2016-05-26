@@ -30,24 +30,15 @@ import scalafx.geometry.Point2D
 trait VisualLink[L <: VisualLink[L]] extends Link { this: L =>
   def internalPoints: List[Point2D]
 
-  def text: String
+  def styleClass: String
 
   def selected: Boolean
 
   def labelCenter: Option[Point2D]
 
-  def settings: VisualLinkSettings
-
-  def selectedSettings: VisualLinkSettings
-
-
   def visualCopy(
                   internalPoints: List[Point2D] = internalPoints,
-                  text: String = text,
 
                   selected: Boolean = selected,
                   labelCenter: Option[Point2D] = labelCenter): L
-
-
-  override def toString: String = text
 }

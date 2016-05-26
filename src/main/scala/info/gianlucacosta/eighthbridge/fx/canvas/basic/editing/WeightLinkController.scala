@@ -20,6 +20,7 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic.editing
 
+import info.gianlucacosta.eighthbridge.fx.canvas.basic.{BasicLink, BasicVertex}
 import info.gianlucacosta.eighthbridge.graphs.point2point.specific.Weighted
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 import info.gianlucacosta.eighthbridge.util.fx.dialogs.InputDialogs
@@ -30,7 +31,7 @@ import info.gianlucacosta.eighthbridge.util.fx.dialogs.InputDialogs
   * @tparam V Vertex
   * @tparam L Link
   */
-trait WeightLinkController[V <: VisualVertex[V], L <: VisualLink[L] with Weighted[L], G <: VisualGraph[V, L, G]] extends InteractiveEditingController[V, L, G] {
+trait WeightLinkController[V <: BasicVertex[V], L <: BasicLink[L] with Weighted[L], G <: VisualGraph[V, L, G]] extends InteractiveEditingController[V, L, G] {
   override protected def interactiveLinkEditing(graph: G, link: L): Option[L] = {
     val weightInputResult = InputDialogs.askForDouble("Weight:", link.weight, link.minWeight, link.maxWeight, "Edit link")
     if (weightInputResult.isEmpty) {

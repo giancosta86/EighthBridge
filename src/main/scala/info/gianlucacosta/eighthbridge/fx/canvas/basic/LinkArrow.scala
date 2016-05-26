@@ -18,25 +18,13 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.graphs.point2point.visual
+package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import scalafx.scene.paint.Color
-
-object VisualLinkDefaultSelectedSettings extends VisualLinkSettings(
-  lineColor = Color.valueOf("#18ab00"),
-  lineSize = 5,
-  fontName = "Arial",
-  fontSize = 14,
-  fontColor = Color.valueOf("#990000"),
-
-  arrowRelativePosition = 0.75,
-  arrowAngle = math.Pi / 6,
-  arrowLength = 15,
-
-  handleRadiusX = 6,
-  handleRadiusY = 6,
-  handleColor = Color.valueOf("#b3ccff"),
-
-  labelConnectorColor = Color.Maroon,
-  labelConnectorDashArray = List(15.0, 10.0)
+/**
+  * Link arrow settings
+  */
+case class LinkArrow(
+    relativePosition: Double = 0.75,
+    angle: Double = math.Pi / 6,
+    length: Double = 15
 )
