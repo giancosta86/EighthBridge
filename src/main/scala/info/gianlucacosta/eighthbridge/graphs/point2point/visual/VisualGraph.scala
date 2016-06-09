@@ -23,7 +23,7 @@ package info.gianlucacosta.eighthbridge.graphs.point2point.visual
 import java.util.UUID
 
 import info.gianlucacosta.eighthbridge.graphs.Graph
-import info.gianlucacosta.eighthbridge.graphs.point2point.ArcBinding
+import info.gianlucacosta.eighthbridge.graphs.point2point.{ArcBinding, DirectedGraph}
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.geometry.{Bounds, Dimension2D, Point2D}
@@ -36,7 +36,7 @@ import scalafx.geometry.{Bounds, Dimension2D, Point2D}
   * (for example, getLinkedVertexes() or getEdgesBetween()) can actually interpret it
   * as an undirected graph.
   */
-trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends Graph[V, L, ArcBinding, G] { this: G =>
+trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends DirectedGraph[V, L, G] { this: G =>
   def directed: Boolean
 
   def dimension: Dimension2D
@@ -103,57 +103,4 @@ trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
 
       vertex.visualCopy(center = newCenter)
     }))
-
-
-  /**
-    * Returns a set of the vertexes that are source of an arc entering the given vertex
-    *
-    * @param vertex
-    * @return
-    */
-  def enteringVertexes(vertex: V): Set[V] =
-    bindings
-      .filter(binding => binding.targetVertexId == vertex.id)
-      .map(binding => getVertex(binding.sourceVertexId).get)
-
-
-  /**
-    * Returns a set of the vertexes that are target of an arc leaving the given vertex
-    *
-    * @param vertex
-    * @return
-    */
-  def exitingVertexes(vertex: V): Set[V] =
-    bindings
-      .filter(binding => binding.sourceVertexId == vertex.id)
-      .map(binding => getVertex(binding.targetVertexId).get)
-
-
-  /**
-    * Returns a set of vertexes connected to the given vertex
-    *
-    * @param vertex
-    * @return
-    */
-  def linkedVertexes(vertex: V): Set[V] =
-    enteringVertexes(vertex) ++ exitingVertexes(vertex)
-
-
-  def getEdgesBetween(linkVertexes: Set[V]): Set[L] = {
-    bindings
-      .filter(binding =>
-        binding.vertexIds == linkVertexes.map(_.id)
-      )
-      .map(binding => getLink(binding.linkId).get)
-  }
-
-
-  def getArcsBetween(sourceVertex: V, targetVertex: V): Set[L] =
-    bindings
-      .filter(binding =>
-        binding.sourceVertexId == sourceVertex.id
-          &&
-          binding.targetVertexId == targetVertex.id
-      )
-      .map(binding => getLink(binding.linkId).get)
 }

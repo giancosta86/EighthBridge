@@ -217,4 +217,37 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this
   @transient
   lazy val unlinkedVertexes: Set[V] =
     vertexes.diff(linkedVertexes)
+
+
+  /**
+    * Returns the set of links connecting the given vertexes
+    * @param linkVertexes A set of vertexes
+    * @return A set of links connecting the vertexes
+    */
+  def getLinksBetween(linkVertexes: Set[V]): Set[L] = {
+    bindings
+      .filter(binding =>
+        binding.vertexIds == linkVertexes.map(_.id)
+      )
+      .map(binding => getLink(binding.linkId).get)
+  }
+
+
+  def getLinksBetween(linkVertexes: V*): Set[L] =
+    getLinksBetween(linkVertexes.toSet)
+
+
+  /**
+    * Returns a set of vertexes connected to the given vertex
+    *
+    * @param vertex A vertex in the graph
+    * @return The set of all the vertexes connected to the given vertex
+    */
+  def linkedVertexes(vertex: V): Set[V] =
+    bindings
+        .filter(binding => binding.vertexIds.contains(vertex.id))
+        .flatMap(binding => binding.vertexIds - vertex.id)
+        .map(vertexId => getVertex(vertexId).get)
+
+
 }
