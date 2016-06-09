@@ -147,7 +147,7 @@ class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
   handleEvent(KeyEvent.KeyPressed) {
     (keyEvent: KeyEvent) => {
       keyEvent.code match {
-        case KeyCode.DELETE =>
+        case KeyCode.Delete =>
           controller.deleteSelection(graph())
             .foreach(graph() = _)
 

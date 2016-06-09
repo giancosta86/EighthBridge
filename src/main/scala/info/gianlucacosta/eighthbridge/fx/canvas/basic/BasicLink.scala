@@ -26,7 +26,9 @@ import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualLink
   * Link dedicated to the "basic" package
   */
 trait BasicLink[L <: BasicLink[L]] extends VisualLink[L] { this: L =>
-  val text: String
-  val arrow: LinkArrow
-  val handleRadius: LinkHandleRadius
+  def text: String
+  def arrow: LinkArrow
+  def handleRadius: LinkHandleRadius
+
+  override def toString: String = text
 }

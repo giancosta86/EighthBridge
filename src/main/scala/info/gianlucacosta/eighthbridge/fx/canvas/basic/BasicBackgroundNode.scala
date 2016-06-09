@@ -24,15 +24,17 @@ import java.util.UUID
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
-import info.gianlucacosta.eighthbridge.util.fx.geometry.DiagonalBounds
-import info.gianlucacosta.eighthbridge.util.fx.geometry.MouseEventExtensions._
-import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
+import info.gianlucacosta.helios.fx.geometry.DiagonalBounds
+import info.gianlucacosta.helios.mathutils.Numbers
+import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.Includes._
 import scalafx.geometry.{BoundingBox, Point2D}
 import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape.Rectangle
+
+
 
 /**
   * Default, interactive implementation of BackgroundNode
@@ -95,13 +97,13 @@ class BasicBackgroundNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGra
   handleEvent(MouseEvent.MousePressed) {
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
-        case MouseButton.PRIMARY =>
+        case MouseButton.Primary =>
           dragAnchor = mouseEvent.point
           notifyGraphChanged(
             graph.deselectAll
           )
 
-        case MouseButton.SECONDARY =>
+        case MouseButton.Secondary =>
           notifyGraphChanged(
             graph.deselectAll
           )
@@ -117,7 +119,7 @@ class BasicBackgroundNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGra
   handleEvent(MouseEvent.MouseDragged) {
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
-        case MouseButton.PRIMARY =>
+        case MouseButton.Primary =>
           val clippedPoint =
             mouseEvent.point.clip(
               graph.dimension
@@ -138,7 +140,7 @@ class BasicBackgroundNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGra
   handleEvent(MouseEvent.MouseReleased) {
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
-        case MouseButton.PRIMARY =>
+        case MouseButton.Primary =>
           if (graph.selectionBounds.width < SelectionRectangleMinSize && graph.selectionBounds.height < SelectionRectangleMinSize) {
             controller.createVertex(graph, mouseEvent.point)
               .foreach(newGraph =>

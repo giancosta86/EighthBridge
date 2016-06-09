@@ -45,6 +45,4 @@ case class DefaultBasicLink(
       selected = selected,
       labelCenter = labelCenter
     )
-
-  override def toString: String = text
 }

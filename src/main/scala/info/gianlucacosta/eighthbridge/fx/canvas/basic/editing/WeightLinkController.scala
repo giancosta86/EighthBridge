@@ -23,7 +23,7 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic.editing
 import info.gianlucacosta.eighthbridge.fx.canvas.basic.{BasicLink, BasicVertex}
 import info.gianlucacosta.eighthbridge.graphs.point2point.specific.Weighted
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
-import info.gianlucacosta.eighthbridge.util.fx.dialogs.InputDialogs
+import info.gianlucacosta.helios.fx.dialogs.InputDialogs
 
 /**
   * Mixin controller providing editing support for weighted links

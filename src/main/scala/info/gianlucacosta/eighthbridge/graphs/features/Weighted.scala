@@ -21,7 +21,7 @@
 package info.gianlucacosta.eighthbridge.graphs.point2point.specific
 
 import info.gianlucacosta.eighthbridge.graphs.Link
-import info.gianlucacosta.eighthbridge.util.Numbers
+import info.gianlucacosta.helios.mathutils.Numbers
 
 /**
   * Object having a weight

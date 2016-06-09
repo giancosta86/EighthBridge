@@ -26,11 +26,9 @@ import javafx.css.StyleablePropertyFactory.SimpleCssMetaData
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
-import info.gianlucacosta.eighthbridge.util.fx.geometry.MouseEventExtensions._
-import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
+import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.Includes._
-import scalafx.beans.property.DoubleProperty
 import scalafx.css.PseudoClass
 import scalafx.geometry.{Point2D, VPos}
 import scalafx.scene.Group
@@ -125,7 +123,7 @@ class BasicVertexNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V
   handleEvent(MouseEvent.MousePressed) {
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
-        case MouseButton.PRIMARY =>
+        case MouseButton.Primary =>
           mouseEvent.clickCount match {
             case 1 =>
               dragAnchor = mouseEvent.point
@@ -151,7 +149,7 @@ class BasicVertexNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V
             case _ =>
           }
 
-        case MouseButton.SECONDARY =>
+        case MouseButton.Secondary =>
           mouseEvent.clickCount match {
             case 1 =>
               if (graph.selectedVertexes.size == 1 && !graph.selectedVertexes.contains(vertex) && graph.selectedLinks.isEmpty) {
@@ -174,7 +172,7 @@ class BasicVertexNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V
   handleEvent(MouseEvent.MouseDragged) {
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
-        case MouseButton.PRIMARY =>
+        case MouseButton.Primary =>
           val mousePoint = mouseEvent.point
           val delta = mousePoint - dragAnchor
 

@@ -24,10 +24,8 @@ import java.util.UUID
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
-import info.gianlucacosta.eighthbridge.util.fx.geometry.BoundsExtensions._
-import info.gianlucacosta.eighthbridge.util.fx.geometry.MouseEventExtensions._
-import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
-import info.gianlucacosta.eighthbridge.util.fx.geometry._
+import info.gianlucacosta.helios.fx.geometry.{DiagonalBounds, Segment}
+import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.Includes._
 import scalafx.css.PseudoClass
@@ -52,12 +50,12 @@ class BasicLinkNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, 
   private class LinkSegment(indexOfNewInternalPoint: Int) extends Segment {
     styleClass.add("line")
 
-    strokeLineCap = StrokeLineCap.ROUND
+    strokeLineCap = StrokeLineCap.Round
 
     handleEvent(MouseEvent.MousePressed) {
       (mouseEvent: MouseEvent) => {
         mouseEvent.button match {
-          case MouseButton.SECONDARY =>
+          case MouseButton.Secondary =>
 
             val internalPoint = mouseEvent.point
 
@@ -167,7 +165,7 @@ class BasicLinkNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, 
     handleEvent(MouseEvent.MousePressed) {
       (mouseEvent: MouseEvent) => {
         mouseEvent.button match {
-          case MouseButton.SECONDARY =>
+          case MouseButton.Secondary =>
             mouseEvent.clickCount match {
               case 1 =>
                 val newInternalPoints = link.internalPoints.filter(internalPoint => internalPoint != center)
@@ -189,7 +187,7 @@ class BasicLinkNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, 
     handleEvent(MouseEvent.MouseDragged) {
       (mouseEvent: MouseEvent) => {
         mouseEvent.button match {
-          case MouseButton.PRIMARY =>
+          case MouseButton.Primary =>
             val mousePoint = mouseEvent.point
             val delta = mousePoint - dragAnchor //The initial drag anchor is set by the link's click filter
 
@@ -243,7 +241,7 @@ class BasicLinkNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, 
     handleEvent(MouseEvent.MouseDragged) {
       (mouseEvent: MouseEvent) => {
         mouseEvent.button match {
-          case MouseButton.PRIMARY =>
+          case MouseButton.Primary =>
             mouseEvent.clickCount match {
               case 1 =>
                 val mousePoint = mouseEvent.point
@@ -326,7 +324,7 @@ class BasicLinkNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, 
   filterEvent(MouseEvent.MousePressed) {
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
-        case MouseButton.PRIMARY =>
+        case MouseButton.Primary =>
           mouseEvent.clickCount match {
             case 1 =>
               dragAnchor = mouseEvent.point
@@ -357,7 +355,7 @@ class BasicLinkNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, 
   handleEvent(MouseEvent.MousePressed) {
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
-        case MouseButton.PRIMARY =>
+        case MouseButton.Primary =>
           mouseEvent.clickCount match {
             case 1 =>
               if (mouseEvent.controlDown) {

@@ -24,7 +24,7 @@ import java.util.UUID
 
 import info.gianlucacosta.eighthbridge.graphs.Graph
 import info.gianlucacosta.eighthbridge.graphs.point2point.ArcBinding
-import info.gianlucacosta.eighthbridge.util.fx.geometry.Point2DExtensions._
+import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.geometry.{Bounds, Dimension2D, Point2D}
 

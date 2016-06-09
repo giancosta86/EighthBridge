@@ -43,7 +43,5 @@ case class DefaultBasicVertex(
       center = center,
       selected = selected
     )
-
-  override val toString: String = text
 }
 
