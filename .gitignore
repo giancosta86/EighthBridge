@@ -1,5 +1,6 @@
-/.gradle/**
-/build/**
-/.idea/**
+/.gradle/
+/build/
+/.idea/
 /*.iml
-/src/main/scala/info/gianlucacosta/eighthbridge/ArtifactInfo.scala
+
+/src/generated/

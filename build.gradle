@@ -29,8 +29,8 @@ buildscript {
 
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
-        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.0'
-        classpath 'info.gianlucacosta.aurora:aurora:4.4'
+        classpath 'info.gianlucacosta.moonlicense:moonlicense-gradle:4.3'
+        classpath 'info.gianlucacosta.aurora:aurora:6.0'
     }
 }
 
@@ -53,14 +53,15 @@ ext.facebookPage = "https://www.facebook.com/EighthBridge-190637781313301"
 
 
 dependencies {
+    generatedCompile 'org.scala-lang:scala-library:2.11.8'
+
     compile 'org.scala-lang:scala-library:2.11.8'
-    compile 'org.scalafx:scalafx_2.11:8.0.60-R9'
+
+    compile 'info.gianlucacosta.helios:helios-core:2.5'
 }
 
 
 aurora {
-    release = false
-
     gitHubUser = 'giancosta86'
 
     author {
