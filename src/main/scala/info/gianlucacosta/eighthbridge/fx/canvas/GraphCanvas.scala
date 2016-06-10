@@ -51,17 +51,25 @@ class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
     * This property is set whenever a new graph is set- programmatically or via
     * user interaction.
     */
-  val graph = new SimpleObjectProperty[G](initialGraph)
+  val graphProperty = new SimpleObjectProperty[G](initialGraph)
 
-  graph.addListener(new InvalidationListener {
-    override def invalidated(observable: Observable): Unit = {
-      render()
-    }
+  graphProperty.addListener((observable: Observable) => {
+    render()
   })
+
+
+  def graph: G =
+    graphProperty()
+
+
+  def graph_=(newValue: G): Unit = {
+    graphProperty() = newValue
+  }
+
 
   private val backgroundNode: BackgroundNode[V, L, G] = controller.createBackgroundNode()
   require(backgroundNode != null)
-  backgroundNode.addGraphChangedListener(graph() = _)
+  backgroundNode.addGraphChangedListener(newGraph => graph = newGraph)
   children.add(backgroundNode)
 
   private var vertexNodes: Map[UUID, VertexNode[V, L, G]] = Map()
@@ -73,10 +81,10 @@ class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
 
 
   private def render(): Unit = {
-    require(graph() != null)
+    require(graph != null)
 
     val (newLinkNodes, linkNodesToRemove) = linkNodes.partition {
-      case (linkId, linkNode) => graph().containsLink(linkId)
+      case (linkId, linkNode) => graph.containsLink(linkId)
     }
 
     linkNodes = newLinkNodes
@@ -84,58 +92,63 @@ class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
 
 
     val (newVertexNodes, vertexNodesToRemove) = vertexNodes.partition {
-      case (vertexId, vertexNode) => graph().containsVertex(vertexId)
+      case (vertexId, vertexNode) => graph.containsVertex(vertexId)
     }
     vertexNodes = newVertexNodes
     vertexNodesToRemove.values.foreach(children.remove)
 
 
 
-    this.resize(graph().dimension.width, graph().dimension.height)
+    this.resize(graph.dimension.width, graph.dimension.height)
+
 
     clip = new Rectangle {
-      width = graph().dimension.width
-      height = graph().dimension.height
+      width = graph.dimension.width
+      height = graph.dimension.height
     }
 
 
-    graph().bindings.foreach(binding => {
-      val link = graph().getLink(binding.linkId).get
+    graph.bindings.foreach(binding => {
+      val link = graph.getLink(binding.linkId).get
 
       val linkNode = linkNodes.getOrElse(
         binding.linkId, {
-          val sortedVertexes = binding.sortedVertexIds.map(vertexId => graph().getVertex(vertexId).get)
-
-          val sourceVertex = sortedVertexes.head
-          val targetVertex = sortedVertexes.last
+          val sourceVertex = graph.getVertex(binding.sourceVertexId).get
+          val targetVertex = graph.getVertex(binding.targetVertexId).get
 
           val newLinkNode = controller.createLinkNode(sourceVertex, targetVertex, link)
-          newLinkNode.addGraphChangedListener(graph() = _)
+          newLinkNode.addGraphChangedListener(newGraph => graph = newGraph)
+
           children.add(1 + linkNodes.size, newLinkNode)
+
           linkNodes += (binding.linkId -> newLinkNode)
+
           newLinkNode
         })
 
-      linkNode.setup(controller, graph(), link)
+      linkNode.setup(controller, graph, link)
     })
 
 
-    graph().vertexes.foreach(vertex => {
+    graph.vertexes.foreach(vertex => {
       val vertexNode = vertexNodes.getOrElse(
         vertex.id, {
           val newVertexNode = controller.createVertexNode(vertex)
-          newVertexNode.addGraphChangedListener(graph() = _)
+          newVertexNode.addGraphChangedListener(newGraph => graph = newGraph)
+
           children.add(1 + linkNodes.size + vertexNodes.size, newVertexNode)
+
           vertexNodes += (vertex.id -> newVertexNode)
+
           newVertexNode
         })
 
-      vertexNode.setup(controller, graph(), vertex)
+      vertexNode.setup(controller, graph, vertex)
     })
 
 
-    //This must be the last in order to have more information on vertex nodes and link nodes
-    backgroundNode.setup(controller, graph(), vertexNodes, linkNodes)
+    //This must be the last in order to have full information on vertex nodes and link nodes
+    backgroundNode.setup(controller, graph, vertexNodes, linkNodes)
 
 
     backgroundNode.render()
@@ -148,8 +161,8 @@ class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
     (keyEvent: KeyEvent) => {
       keyEvent.code match {
         case KeyCode.Delete =>
-          controller.deleteSelection(graph())
-            .foreach(graph() = _)
+          controller.deleteSelection(graph)
+            .foreach(newGraph => graph = newGraph)
 
         case _ =>
       }
