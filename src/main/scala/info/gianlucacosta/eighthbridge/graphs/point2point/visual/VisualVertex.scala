@@ -30,9 +30,9 @@ import scalafx.geometry.Point2D
 trait VisualVertex[V <: VisualVertex[V]] extends Vertex { this: V =>
   def center: Point2D
 
-  def styleClass: String
-
   def selected: Boolean
+
+  def styleClass: String
 
   def visualCopy(center: Point2D = center,
                  selected: Boolean = selected): V

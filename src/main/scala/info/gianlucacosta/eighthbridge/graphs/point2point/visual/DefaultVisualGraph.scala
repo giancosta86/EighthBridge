@@ -34,9 +34,11 @@ import scalafx.geometry.{BoundingBox, Bounds, Dimension2D}
   * @param links
   * @param bindings
   */
-case class DefaultVisualGraph[V <: VisualVertex[V], L <: VisualLink[L]](directed: Boolean,
+case class DefaultVisualGraph[V <: VisualVertex[V], L <: VisualLink[L]](
+                                                                         directed: Boolean,
                               dimension: Dimension2D,
                               selectionBounds: Bounds = new BoundingBox(0, 0, 0, 0),
+
                               vertexes: Set[V] = Set[V](),
                               links: Set[L] = Set[L](),
                               bindings: Set[ArcBinding] = Set[ArcBinding]()) extends VisualGraph[V, L, DefaultVisualGraph[V, L]] {

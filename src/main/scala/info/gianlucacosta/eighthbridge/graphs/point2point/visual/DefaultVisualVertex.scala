@@ -34,9 +34,9 @@ import scalafx.geometry.Point2D
 case class DefaultVisualVertex(
                                 center: Point2D,
 
-                                styleClass: String = "",
-
                                 selected: Boolean = false,
+
+                                styleClass: String = "",
 
                                 id: UUID = UUID.randomUUID()
                               ) extends VisualVertex[DefaultVisualVertex] {

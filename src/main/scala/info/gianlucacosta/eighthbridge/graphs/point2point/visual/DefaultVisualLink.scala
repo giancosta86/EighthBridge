@@ -35,11 +35,11 @@ import scalafx.geometry.Point2D
 case class DefaultVisualLink(
                               internalPoints: List[Point2D] = Nil,
 
-                              styleClass: String = "",
-
                               selected: Boolean = false,
 
                               labelCenter: Option[Point2D] = None,
+
+                              styleClass: String = "",
 
                               id: UUID = UUID.randomUUID()
 

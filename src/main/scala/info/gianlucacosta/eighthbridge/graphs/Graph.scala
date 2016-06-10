@@ -119,7 +119,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this
     removeVertexes(Set(vertex))
 
 
-  def bindLinks(bindingMapToAdd: Map[L, B]): G = {
+  def addLinks(bindingMapToAdd: Map[L, B]): G = {
     bindingMapToAdd.foreach {
       case (link, binding) =>
         require(link.id == binding.linkId, "Each binding must reference its associated link")
@@ -152,8 +152,8 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this
   }
 
 
-  def bindLink(linkToAdd: L, bindingToAdd: B) =
-    bindLinks(Map(linkToAdd -> bindingToAdd))
+  def addLink(linkToAdd: L, bindingToAdd: B) =
+    addLinks(Map(linkToAdd -> bindingToAdd))
 
 
   def replaceLinks(replacingLinks: Set[L]): G = {
@@ -175,8 +175,10 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this
   def removeLinks(linksToRemove: Set[L]): G = {
     val newLinks = links.diff(linksToRemove)
 
-    require(newLinks.size == links.size - linksToRemove.size,
-      "All the links to remove must belong to the graph")
+    require(
+      newLinks.size == links.size - linksToRemove.size,
+      "All the links to remove must belong to the graph"
+    )
 
     val linkIdsToRemove = linksToRemove.map(_.id)
 
@@ -207,6 +209,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this
   def containsLink(id: UUID): Boolean =
     getLink(id).isDefined
 
+
   @transient
   lazy val linkedVertexes: Set[V] =
     bindings
@@ -221,13 +224,16 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this
 
   /**
     * Returns the set of links connecting the given vertexes
+ *
     * @param linkVertexes A set of vertexes
     * @return A set of links connecting the vertexes
     */
   def getLinksBetween(linkVertexes: Set[V]): Set[L] = {
+    val linkVertexIds = linkVertexes.map(_.id)
+
     bindings
       .filter(binding =>
-        binding.vertexIds == linkVertexes.map(_.id)
+        linkVertexIds.subsetOf(binding.vertexIds)
       )
       .map(binding => getLink(binding.linkId).get)
   }

@@ -20,7 +20,6 @@
 
 package info.gianlucacosta.eighthbridge.graphs.point2point.specific
 
-import info.gianlucacosta.eighthbridge.graphs.Link
 import info.gianlucacosta.helios.mathutils.Numbers
 
 /**
@@ -38,9 +37,10 @@ trait Weighted[T <: Weighted[T]] { this: T =>
     * Ensures the weight is in the range [minWeight; maxWeight], throwing an IllegalArgumentException in case of errors
     */
   protected def checkWeight(): Unit = {
-    if (weight < minWeight || weight > maxWeight) {
-      throw new IllegalArgumentException(s"Weight must be in [${Numbers.smartString(minWeight)}; ${Numbers.smartString(maxWeight)}")
-    }
+    require(
+      minWeight <= weight && weight <= maxWeight,
+      s"Weight must be in [${Numbers.smartString(minWeight)}; ${Numbers.smartString(maxWeight)}"
+    )
   }
 
   /**

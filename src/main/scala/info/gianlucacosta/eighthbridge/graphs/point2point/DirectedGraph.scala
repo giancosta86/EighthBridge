@@ -20,6 +20,8 @@
 
 package info.gianlucacosta.eighthbridge.graphs.point2point
 
+import java.util.UUID
+
 import info.gianlucacosta.eighthbridge.graphs.{Graph, Link, Vertex}
 
 /**
@@ -30,7 +32,25 @@ import info.gianlucacosta.eighthbridge.graphs.{Graph, Link, Vertex}
   */
 trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends Graph[V, L, ArcBinding, G] { this: G =>
   /**
-    * Returns a set of the vertexes that are source of an arc entering the given vertex
+    * Adds a link from <i>sourceVertex</i> to <i>targetVertex</i>
+    * @param sourceVertex
+    * @param targetVertex
+    * @param link
+    * @return
+    */
+  def addLink(sourceVertex: V, targetVertex: V, link: L): G = {
+    val binding = new ArcBinding(
+      id = UUID.randomUUID(),
+      sourceVertexId = sourceVertex.id,
+      targetVertexId = targetVertex.id,
+      linkId = link.id
+    )
+
+    addLink(link, binding)
+  }
+
+  /**
+    * Returns the set of the vertexes that are source of any arc entering the given vertex
     *
     * @param vertex
     * @return
@@ -42,7 +62,7 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
 
 
   /**
-    * Returns a set of the vertexes that are target of an arc leaving the given vertex
+    * Returns the set of the vertexes that are target of any arc leaving the given vertex
     *
     * @param vertex
     * @return

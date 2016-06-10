@@ -23,9 +23,12 @@ package info.gianlucacosta.eighthbridge.graphs
 import java.util.UUID
 
 /**
-  * Generic graph component - identified by UUID
+  * Generic graph component (vertex, link, binding) - identified by UUID
   */
 trait GraphComponent {
+  /**
+    * The unique identification value
+    */
   val id: UUID
 
   override final def equals(obj: Any): Boolean =
@@ -33,7 +36,8 @@ trait GraphComponent {
       case other: GraphComponent =>
         id == other.id
 
-      case _ => false
+      case _ =>
+        false
     }
 
   override final def hashCode(): Int =
