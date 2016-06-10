@@ -28,9 +28,9 @@ import scalafx.scene.Node
   * Generic JavaFX node rendering a graph component
   */
 trait GraphCanvasNode[
-  V <: VisualVertex[V],
-  L <: VisualLink[L],
-  G <: VisualGraph[V, L, G]
+V <: VisualVertex[V],
+L <: VisualLink[L],
+G <: VisualGraph[V, L, G]
 ] extends Node {
   private var graphChangedListener: Option[VisualGraphChangedListener[V, L, G]] =
     None

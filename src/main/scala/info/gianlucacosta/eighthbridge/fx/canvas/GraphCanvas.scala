@@ -21,10 +21,10 @@
 package info.gianlucacosta.eighthbridge.fx.canvas
 
 import java.util.UUID
+import javafx.beans.Observable
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.{InvalidationListener, Observable}
 
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualVertex, VisualLink}
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
 import scalafx.Includes._
 import scalafx.scene.input.{KeyCode, KeyEvent}
@@ -44,9 +44,9 @@ import scalafx.scene.shape.Rectangle
   * @param initialGraph The initial graph shown by the canvas
   */
 class GraphCanvas[
-  V <: VisualVertex[V],
-  L <: VisualLink[L],
-  G <: VisualGraph[V, L, G]
+V <: VisualVertex[V],
+L <: VisualLink[L],
+G <: VisualGraph[V, L, G]
 ](controller: GraphCanvasController[V, L, G], initialGraph: G) extends Pane {
   require(controller != null)
   require(initialGraph != null)

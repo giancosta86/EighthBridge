@@ -20,12 +20,8 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.css._
-import javafx.css.StyleablePropertyFactory.SimpleCssMetaData
-
 import info.gianlucacosta.eighthbridge.fx.canvas._
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.Includes._
@@ -44,9 +40,9 @@ object BasicVertexNode {
   * Default, interactive implementation of VertexNode
   */
 class BasicVertexNode[
-  V <: BasicVertex[V],
-  L <: BasicLink[L],
-  G <: VisualGraph[V, L, G]
+V <: BasicVertex[V],
+L <: BasicLink[L],
+G <: VisualGraph[V, L, G]
 ] extends Group with VertexNode[V, L, G] {
   private var controller: BasicController[V, L, G] = _
   private var graph: G = _
@@ -82,7 +78,6 @@ class BasicVertexNode[
     require(this.graph != null)
     require(this.vertex != null)
   }
-
 
 
   override def render(): Unit = {

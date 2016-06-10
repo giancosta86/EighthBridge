@@ -31,7 +31,8 @@ import java.util.UUID
   * @tparam L Link type
   * @tparam B Binding type
   */
-trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this: G =>
+trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
+  this: G =>
   def vertexes: Set[V]
 
   def links: Set[L]
@@ -224,7 +225,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this
 
   /**
     * Returns the set of links connecting the given vertexes
- *
+    *
     * @param linkVertexes A set of vertexes
     * @return A set of links connecting the vertexes
     */
@@ -251,9 +252,9 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] { this
     */
   def linkedVertexes(vertex: V): Set[V] =
     bindings
-        .filter(binding => binding.vertexIds.contains(vertex.id))
-        .flatMap(binding => binding.vertexIds - vertex.id)
-        .map(vertexId => getVertex(vertexId).get)
+      .filter(binding => binding.vertexIds.contains(vertex.id))
+      .flatMap(binding => binding.vertexIds - vertex.id)
+      .map(vertexId => getVertex(vertexId).get)
 
 
 }

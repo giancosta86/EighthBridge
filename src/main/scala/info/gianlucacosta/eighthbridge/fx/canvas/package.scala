@@ -24,9 +24,9 @@ import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, V
 
 package object canvas {
   type VisualGraphChangedListener[
-    V <: VisualVertex[V],
-    L <: VisualLink[L],
-    G <: VisualGraph[V, L, G]
+  V <: VisualVertex[V],
+  L <: VisualLink[L],
+  G <: VisualGraph[V, L, G]
   ] =
-    (G => Unit)
+  (G => Unit)
 }

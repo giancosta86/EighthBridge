@@ -23,7 +23,8 @@ package info.gianlucacosta.eighthbridge.graphs.point2point.specific
 /**
   * Object having a name
   */
-trait Named[T <: Named[T]] { this: T =>
+trait Named[T <: Named[T]] {
+  this: T =>
   def name: String
 
   /**

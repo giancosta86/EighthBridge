@@ -25,7 +25,8 @@ import info.gianlucacosta.helios.mathutils.Numbers
 /**
   * Object having a weight
   */
-trait Weighted[T <: Weighted[T]] { this: T =>
+trait Weighted[T <: Weighted[T]] {
+  this: T =>
   def minWeight: Double
 
   def maxWeight: Double

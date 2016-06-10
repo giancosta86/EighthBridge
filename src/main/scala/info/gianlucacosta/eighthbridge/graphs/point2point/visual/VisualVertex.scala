@@ -27,7 +27,8 @@ import scalafx.geometry.Point2D
 /**
   * A vertex for VisualGraph
   */
-trait VisualVertex[V <: VisualVertex[V]] extends Vertex { this: V =>
+trait VisualVertex[V <: VisualVertex[V]] extends Vertex {
+  this: V =>
   def center: Point2D
 
   def selected: Boolean

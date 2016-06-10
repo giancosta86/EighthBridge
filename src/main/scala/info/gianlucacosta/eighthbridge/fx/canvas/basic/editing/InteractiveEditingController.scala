@@ -21,7 +21,7 @@
 package info.gianlucacosta.eighthbridge.fx.canvas.basic.editing
 
 import info.gianlucacosta.eighthbridge.fx.canvas.basic.{BasicController, BasicLink, BasicVertex}
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 import info.gianlucacosta.helios.fx.dialogs.Alerts
 
 import scalafx.geometry.Point2D

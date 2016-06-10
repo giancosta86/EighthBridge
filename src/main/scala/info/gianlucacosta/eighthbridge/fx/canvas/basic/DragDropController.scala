@@ -20,7 +20,7 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 
 import scalafx.geometry.Point2D
 

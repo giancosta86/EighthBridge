@@ -23,9 +23,7 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 import java.util.UUID
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
-import info.gianlucacosta.helios.fx.geometry.DiagonalBounds
-import info.gianlucacosta.helios.mathutils.Numbers
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.Includes._
@@ -43,9 +41,9 @@ object BasicBackgroundNode {
   * Default, interactive implementation of BackgroundNode
   */
 class BasicBackgroundNode[
-  V <: BasicVertex[V],
-  L <: BasicLink[L],
-  G <: VisualGraph[V, L, G]
+V <: BasicVertex[V],
+L <: BasicLink[L],
+G <: VisualGraph[V, L, G]
 ] extends Group with BackgroundNode[V, L, G] {
   styleClass.add("graph")
 
@@ -125,9 +123,9 @@ class BasicBackgroundNode[
       mouseEvent.button match {
         case MouseButton.Primary =>
           controller.dragSelectionBounds(graph, dragAnchor, mouseEvent.point)
-              .foreach(newGraph =>
-                notifyGraphChanged(newGraph)
-              )
+            .foreach(newGraph =>
+              notifyGraphChanged(newGraph)
+            )
 
         case _ =>
       }

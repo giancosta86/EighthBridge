@@ -24,7 +24,7 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
   * Link arrow settings
   */
 case class LinkArrow(
-    relativePosition: Double = 0.75,
-    angle: Double = math.Pi / 6,
-    length: Double = 15
-)
+                      relativePosition: Double = 0.75,
+                      angle: Double = math.Pi / 6,
+                      length: Double = 15
+                    )

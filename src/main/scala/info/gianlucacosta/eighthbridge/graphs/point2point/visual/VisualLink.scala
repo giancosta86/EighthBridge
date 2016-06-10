@@ -27,7 +27,8 @@ import scalafx.geometry.Point2D
 /**
   * A link for VisualGraph
   */
-trait VisualLink[L <: VisualLink[L]] extends Link { this: L =>
+trait VisualLink[L <: VisualLink[L]] extends Link {
+  this: L =>
   def internalPoints: List[Point2D]
 
   def selected: Boolean

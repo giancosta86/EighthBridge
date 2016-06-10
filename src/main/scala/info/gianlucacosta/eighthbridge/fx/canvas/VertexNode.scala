@@ -26,9 +26,9 @@ import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, V
   * JavaFX node rendering a VisualVertex
   */
 trait VertexNode[
-  V <: VisualVertex[V],
-  L <: VisualLink[L],
-  G <: VisualGraph[V, L, G]
+V <: VisualVertex[V],
+L <: VisualLink[L],
+G <: VisualGraph[V, L, G]
 ] extends GraphCanvasNode[V, L, G] {
   /**
     * Called by GraphCanvas at every rendering - before actually rendering any node

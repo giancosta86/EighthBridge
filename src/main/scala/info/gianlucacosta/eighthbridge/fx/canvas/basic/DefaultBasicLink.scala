@@ -22,21 +22,21 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 import java.util.UUID
 
-import scalafx.geometry.{Point2D}
+import scalafx.geometry.Point2D
 
 /**
   * Default BasicLink implementation
   */
 case class DefaultBasicLink(
-                            text: String = "",
-                            arrow: LinkArrow = LinkArrow(),
-                            handleRadius: LinkHandleRadius = LinkHandleRadius(),
-                            styleClass: String = "",
-                            internalPoints: List[Point2D] = List(),
-                            selected: Boolean = false,
-                            labelCenter: Option[Point2D] = None,
-                            id: UUID = UUID.randomUUID()
-                          ) extends BasicLink[DefaultBasicLink] {
+                             text: String = "",
+                             arrow: LinkArrow = LinkArrow(),
+                             handleRadius: LinkHandleRadius = LinkHandleRadius(),
+                             styleClass: String = "",
+                             internalPoints: List[Point2D] = List(),
+                             selected: Boolean = false,
+                             labelCenter: Option[Point2D] = None,
+                             id: UUID = UUID.randomUUID()
+                           ) extends BasicLink[DefaultBasicLink] {
 
 
   override def visualCopy(

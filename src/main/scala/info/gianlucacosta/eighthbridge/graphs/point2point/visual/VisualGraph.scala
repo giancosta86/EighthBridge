@@ -20,10 +20,7 @@
 
 package info.gianlucacosta.eighthbridge.graphs.point2point.visual
 
-import java.util.UUID
-
-import info.gianlucacosta.eighthbridge.graphs.Graph
-import info.gianlucacosta.eighthbridge.graphs.point2point.{ArcBinding, DirectedGraph}
+import info.gianlucacosta.eighthbridge.graphs.point2point.DirectedGraph
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.geometry.{Bounds, Dimension2D, Point2D}
@@ -35,7 +32,8 @@ import scalafx.geometry.{Bounds, Dimension2D, Point2D}
   * based on arc bindings - however, its "directed" property enables renderers to draw it
   * with edges instead of arcs.
   */
-trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends DirectedGraph[V, L, G] { this: G =>
+trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends DirectedGraph[V, L, G] {
+  this: G =>
   def directed: Boolean
 
   def dimension: Dimension2D
@@ -69,7 +67,7 @@ trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
     selectedVertexes.isEmpty && selectedLinks.isEmpty
 
 
-  def setSelection(selectionVertexes: Set[V] = Set(), selectionLinks: Set[L] = Set()): G  =
+  def setSelection(selectionVertexes: Set[V] = Set(), selectionLinks: Set[L] = Set()): G =
     replaceVertexes(
       vertexes.map(vertex =>
         vertex.visualCopy(selected = selectionVertexes.contains(vertex))
@@ -80,7 +78,6 @@ trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
           link.visualCopy(selected = selectionLinks.contains(link))
         )
       )
-
 
 
   def moveSelectedVertexesBy(delta: Point2D): G =

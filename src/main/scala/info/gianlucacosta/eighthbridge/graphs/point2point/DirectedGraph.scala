@@ -26,13 +26,16 @@ import info.gianlucacosta.eighthbridge.graphs.{Graph, Link, Vertex}
 
 /**
   * A directed graph - that is, a graph whose Binding type parameter resolved to ArcBinding
+  *
   * @tparam V Vertex type
   * @tparam L Link type
   * @tparam G
   */
-trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends Graph[V, L, ArcBinding, G] { this: G =>
+trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends Graph[V, L, ArcBinding, G] {
+  this: G =>
   /**
     * Adds a link from <i>sourceVertex</i> to <i>targetVertex</i>
+    *
     * @param sourceVertex
     * @param targetVertex
     * @param link
@@ -75,6 +78,7 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
 
   /**
     * Returns all the arcs starting in sourceVertex and ending in targetVertex
+    *
     * @param sourceVertex The source vertex
     * @param targetVertex The target vertex
     * @return A set of links
