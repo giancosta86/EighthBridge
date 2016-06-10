@@ -34,16 +34,20 @@ import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape.Rectangle
 
-
+object BasicBackgroundNode {
+  private val SelectionRectangleMinSize = 2
+  private val EmptySelectionBounds = new BoundingBox(0, 0, 0, 0)
+}
 
 /**
   * Default, interactive implementation of BackgroundNode
   */
-class BasicBackgroundNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends Group with BackgroundNode[V, L, G] {
+class BasicBackgroundNode[
+  V <: BasicVertex[V],
+  L <: BasicLink[L],
+  G <: VisualGraph[V, L, G]
+] extends Group with BackgroundNode[V, L, G] {
   styleClass.add("graph")
-
-  private val SelectionRectangleMinSize = 2
-  private val EmptySelectionBounds = new BoundingBox(0, 0, 0, 0)
 
   private var controller: BasicController[V, L, G] = _
   private var graph: G = _
@@ -120,16 +124,10 @@ class BasicBackgroundNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGra
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
         case MouseButton.Primary =>
-          val clippedPoint =
-            mouseEvent.point.clip(
-              graph.dimension
-            )
-
-          val newSelectionBounds = new DiagonalBounds(dragAnchor, clippedPoint)
-
-          notifyGraphChanged(
-            graph.visualCopy(selectionBounds = newSelectionBounds)
-          )
+          controller.dragSelectionBounds(graph, dragAnchor, mouseEvent.point)
+              .foreach(newGraph =>
+                notifyGraphChanged(newGraph)
+              )
 
         case _ =>
       }
@@ -141,12 +139,13 @@ class BasicBackgroundNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGra
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
         case MouseButton.Primary =>
-          if (graph.selectionBounds.width < SelectionRectangleMinSize && graph.selectionBounds.height < SelectionRectangleMinSize) {
+          if (graph.selectionBounds.width < BasicBackgroundNode.SelectionRectangleMinSize
+            && graph.selectionBounds.height < BasicBackgroundNode.SelectionRectangleMinSize) {
             controller.createVertex(graph, mouseEvent.point)
               .foreach(newGraph =>
                 notifyGraphChanged(
                   newGraph
-                    .visualCopy(selectionBounds = EmptySelectionBounds)
+                    .visualCopy(selectionBounds = BasicBackgroundNode.EmptySelectionBounds)
                 )
               )
           } else {
@@ -167,7 +166,7 @@ class BasicBackgroundNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGra
               graph
                 .setSelection(selectionVertexes, selectionLinks)
                 .visualCopy(
-                  selectionBounds = EmptySelectionBounds
+                  selectionBounds = BasicBackgroundNode.EmptySelectionBounds
                 )
             )
           }

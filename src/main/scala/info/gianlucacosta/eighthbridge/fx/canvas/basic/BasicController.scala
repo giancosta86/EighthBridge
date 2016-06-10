@@ -22,6 +22,9 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
+import info.gianlucacosta.helios.fx.geometry.DiagonalBounds
+
+import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.geometry.Point2D
 
@@ -32,7 +35,11 @@ import scalafx.geometry.Point2D
   *
   * You can also employ one of the concrete subclasses provided by the package, or one of the mixin subtraits.
   */
-trait BasicController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends GraphCanvasController[V, L, G] {
+trait BasicController[
+  V <: BasicVertex[V],
+  L <: BasicLink[L],
+  G <: VisualGraph[V, L, G]
+] extends GraphCanvasController[V, L, G] {
   override def createBackgroundNode(): BackgroundNode[V, L, G] =
     new BasicBackgroundNode
 
@@ -43,6 +50,20 @@ trait BasicController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V
 
   override def createLinkNode(sourceVertex: V, targetVertex: V, link: L): LinkNode[V, L, G] =
     new BasicLinkNode(sourceVertex.id, targetVertex.id)
+
+
+
+  def dragSelectionBounds(graph: G, dragAnchor: Point2D, currentPoint: Point2D): Option[G] = {
+    val clippedPoint =
+      currentPoint.clip(graph.dimension)
+
+      val newSelectionBounds =
+        new DiagonalBounds(dragAnchor, clippedPoint)
+
+    Some(
+      graph.visualCopy(selectionBounds = newSelectionBounds)
+    )
+  }
 
 
   def createVertex(graph: G, center: Point2D): Option[G]

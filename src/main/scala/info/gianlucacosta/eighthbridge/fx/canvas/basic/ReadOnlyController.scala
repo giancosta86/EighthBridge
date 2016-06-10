@@ -28,6 +28,9 @@ import scalafx.geometry.Point2D
   * Controller only showing a graph - totally preventing interactivity
   */
 class ReadOnlyController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
+  override def dragSelectionBounds(graph: G, dragAnchor: Point2D, currentPoint: Point2D): Option[G] =
+    None
+
   override def createVertex(graph: G, center: Point2D): Option[G] =
     None
 
