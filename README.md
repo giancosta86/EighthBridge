@@ -60,8 +60,6 @@ EighthBridge is designed to be simple and minimalist; however, we could now go t
 
 * **fx.canvas.basic.editing** is a package containing the utility trait **InteractiveEditingController** and its sub-traits
 
-* **util**: package with a wide range of utilities - especially related to alerts and input dialogs, geometric computations and desktop integration
-
 
 For further information, a basic documentation can be found in its Scaladoc, which can be downloaded from the library's [section in Hephaestus](https://bintray.com/giancosta86/Hephaestus/EighthBridge). Finally, the full open source code is available on GitHub.
 
@@ -76,6 +74,8 @@ The name *EighthBridge* derives from the famous [problem of the 7 bridges of Kö
 * [Facebook page](https://www.facebook.com/EighthBridge-190637781313301)
 
 * [GraphsJ](https://github.com/giancosta86/GraphsJ)
+
+* [Helios-core](https://github.com/giancosta86/Helios-core)
 
 * [Scala](http://scala-lang.org/)
 
