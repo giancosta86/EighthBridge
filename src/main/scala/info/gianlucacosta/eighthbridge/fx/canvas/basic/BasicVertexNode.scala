@@ -43,7 +43,11 @@ object BasicVertexNode {
 /**
   * Default, interactive implementation of VertexNode
   */
-class BasicVertexNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends Group with VertexNode[V, L, G] {
+class BasicVertexNode[
+  V <: BasicVertex[V],
+  L <: BasicLink[L],
+  G <: VisualGraph[V, L, G]
+] extends Group with VertexNode[V, L, G] {
   private var controller: BasicController[V, L, G] = _
   private var graph: G = _
   private var _vertex: V = _
@@ -56,15 +60,16 @@ class BasicVertexNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V
 
   private var dragAnchor: Point2D = _
 
+  private val body = new Rectangle {
+    styleClass.add("body")
+  }
+
   private val label = new Text {
     styleClass.add("label")
 
     textOrigin = VPos.Top
   }
 
-  private val body = new Rectangle {
-    styleClass.add("body")
-  }
   children.addAll(body, label)
 
 
@@ -87,7 +92,10 @@ class BasicVertexNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V
       styleClass.add(vertex.styleClass)
     }
 
-    this.pseudoClassStateChanged(BasicVertexNode.SelectedPseudoClass, vertex.selected)
+    this.pseudoClassStateChanged(
+      BasicVertexNode.SelectedPseudoClass,
+      vertex.selected
+    )
 
 
     label.text = vertex.text

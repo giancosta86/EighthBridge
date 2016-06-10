@@ -46,7 +46,11 @@ object BasicLinkNode {
   * @param sourceVertexId
   * @param targetVertexId
   */
-class BasicLinkNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]](val sourceVertexId: UUID, val targetVertexId: UUID) extends Group with LinkNode[V, L, G] {
+class BasicLinkNode[
+  V <: BasicVertex[V],
+  L <: BasicLink[L],
+  G <: VisualGraph[V, L, G]
+](val sourceVertexId: UUID, val targetVertexId: UUID) extends Group with LinkNode[V, L, G] {
   private class LinkSegment(indexOfNewInternalPoint: Int) extends Segment {
     styleClass.add("line")
 
