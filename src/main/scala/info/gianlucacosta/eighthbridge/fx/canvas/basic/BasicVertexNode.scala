@@ -38,7 +38,6 @@ import scalafx.scene.text.Text
 
 object BasicVertexNode {
   private val SelectedPseudoClass = PseudoClass("selected")
-  private val DefaultPadding = 0d
 }
 
 /**

@@ -23,11 +23,6 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualVertex
 
 
-object BasicVertex {
-  val DefaultPadding: Double = 15
-}
-
-
 /**
   * Vertex dedicated to the "basic" package
   */
