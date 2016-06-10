@@ -43,7 +43,11 @@ import scalafx.scene.shape.Rectangle
   * @param controller   The controller telling the canvas how to render components and how to react to user input
   * @param initialGraph The initial graph shown by the canvas
   */
-class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]](controller: GraphCanvasController[V, L, G], initialGraph: G) extends Pane {
+class GraphCanvas[
+  V <: VisualVertex[V],
+  L <: VisualLink[L],
+  G <: VisualGraph[V, L, G]
+](controller: GraphCanvasController[V, L, G], initialGraph: G) extends Pane {
   require(controller != null)
   require(initialGraph != null)
 
@@ -69,7 +73,7 @@ class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
 
   private val backgroundNode: BackgroundNode[V, L, G] = controller.createBackgroundNode()
   require(backgroundNode != null)
-  backgroundNode.addGraphChangedListener(newGraph => graph = newGraph)
+  backgroundNode.setGraphChangedListener(newGraph => graph = newGraph)
   children.add(backgroundNode)
 
   private var vertexNodes: Map[UUID, VertexNode[V, L, G]] = Map()
@@ -117,7 +121,7 @@ class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
           val targetVertex = graph.getVertex(binding.targetVertexId).get
 
           val newLinkNode = controller.createLinkNode(sourceVertex, targetVertex, link)
-          newLinkNode.addGraphChangedListener(newGraph => graph = newGraph)
+          newLinkNode.setGraphChangedListener(newGraph => graph = newGraph)
 
           children.add(1 + linkNodes.size, newLinkNode)
 
@@ -134,7 +138,7 @@ class GraphCanvas[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
       val vertexNode = vertexNodes.getOrElse(
         vertex.id, {
           val newVertexNode = controller.createVertexNode(vertex)
-          newVertexNode.addGraphChangedListener(newGraph => graph = newGraph)
+          newVertexNode.setGraphChangedListener(newGraph => graph = newGraph)
 
           children.add(1 + linkNodes.size + vertexNodes.size, newVertexNode)
 

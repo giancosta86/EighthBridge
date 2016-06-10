@@ -27,11 +27,16 @@ import scalafx.scene.Node
 /**
   * Generic JavaFX node rendering a graph component
   */
-trait GraphCanvasNode[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends Node {
-  private var graphChangedListener: Option[VisualGraphChangedListener[V, L, G]] = None
+trait GraphCanvasNode[
+  V <: VisualVertex[V],
+  L <: VisualLink[L],
+  G <: VisualGraph[V, L, G]
+] extends Node {
+  private var graphChangedListener: Option[VisualGraphChangedListener[V, L, G]] =
+    None
 
 
-  def addGraphChangedListener(listener: VisualGraphChangedListener[V, L, G]): Unit = {
+  def setGraphChangedListener(listener: VisualGraphChangedListener[V, L, G]): Unit = {
     require(listener != null)
     require(graphChangedListener.isEmpty)
 

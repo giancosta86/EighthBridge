@@ -39,7 +39,11 @@ case class DefaultBasicLink(
                           ) extends BasicLink[DefaultBasicLink] {
 
 
-  override def visualCopy(internalPoints: List[Point2D], selected: Boolean, labelCenter: Option[Point2D]): DefaultBasicLink =
+  override def visualCopy(
+                           internalPoints: List[Point2D],
+                           selected: Boolean,
+                           labelCenter: Option[Point2D]
+                         ): DefaultBasicLink =
     copy(
       internalPoints = internalPoints,
       selected = selected,
