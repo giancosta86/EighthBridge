@@ -27,5 +27,5 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
   * required by your GUI framework.
   */
 object BasicStyles {
-  val stylesheet = getClass.getResource("BasicStyles.css").toExternalForm
+  val resourceUrl = getClass.getResource("BasicStyles.css")
 }
