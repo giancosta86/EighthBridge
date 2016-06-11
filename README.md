@@ -13,18 +13,20 @@ EighthBridge is a ScalaFX library dedicated to:
 * **graph interactive rendering**, via a ScalaFX component named *GraphCanvas* and the related classes and traits - in particular, *VisualGraph*. Graphs are rendered in JavaFX, letting the developer choose how users can interact with every element
 
 
-EighthBridge stems from both the old Arcontes library (introduced to support a previous version of GraphsJ) and my experience with the [Elm](http://elm-lang.org/) language - which I studied while creating my first HTML 5 videogame - [Solvenius](http://gianlucacosta.info/solvenius/).
+EighthBridge stems from both the old *Arcontes* library (introduced to support a previous version of GraphsJ) and my experience with the [Elm](http://elm-lang.org/) language - which I studied while creating my first HTML 5 videogame - [Solvenius](http://gianlucacosta.info/solvenius/).
 
 In particular, EighthBridge's most important aspect is that *the graph model is immutable* - adding a vertex, for example, creates a new graph.
 
 Such solution, derived from *purely functional programming*, definitely increased the conciseness, simplicity and robustness of the model, dramatically speeding up development.
 
-Mutability is still present where more natural and sometimes almost required - in the ScalaFX components - making EighthBridge a hybrid OOP-functional library, perfectly supported by Scala's hybrid, very elegant nature.
+Mutability is still present where more natural and sometimes almost required - in the ScalaFX components - making EighthBridge *a hybrid OOP-functional library*, perfectly supported by Scala's hybrid, very elegant nature.
+
+To further focus on the declarative nature of EighthBridge, graphs must be *skinned* using standard *JavaFX CSS stylesheets* (see below).
 
 
 ## Requirements
 
-Scala 2.11.8 or later and Java 8u65 or later are recommended to employ EighthBridge.
+Scala 2.11.8 or later and Java 8u91 or later are recommended to employ EighthBridge.
 
 
 ## Referencing the library
@@ -56,12 +58,59 @@ EighthBridge is designed to be simple and minimalist; however, we could now go t
 
 * **DefaultVisualGraph**, **DefaultVisualVertex** and **DefaultVisualLink** are default implementations of the visual traits - each having a related **.*Settings** case class to describe its visual appearance.
 
-* **fx.canvas.basic** is a package providing default implementations of the ScalaFX nodes for rendering graph components, as well as **BasicController**, a fine-grained controller employed by such components to control user interaction.
+* **fx.canvas.basic** is a very important package providing default implementations of the ScalaFX nodes for rendering graph components, as well as **BasicController**, a fine-grained controller employed by such components to control user interaction.
 
 * **fx.canvas.basic.editing** is a package containing the utility trait **InteractiveEditingController** and its sub-traits
 
-
 For further information, a basic documentation can be found in its Scaladoc, which can be downloaded from the library's [section in Hephaestus](https://bintray.com/giancosta86/Hephaestus/EighthBridge). Finally, the full open source code is available on GitHub.
+
+
+## Styling graphs with CSS
+
+Starting from EighthBridge 2, the visual properties (fonts, colors) of graphs, vertexes and links are to be declared in standard *JavaFX CSS* files.
+
+**PLEASE, NOTE**: CSS styling is *mandatory*, not optional: if you forget to add CSS declarations for your graphs, GraphCanvas will only show a black rectangle.
+
+**To include the default CSS stylesheet**, providing very sensible (and overridable) defaults, just add this line of code to the initialization of any scene using EighthBridge:
+
+```scala
+scene.getStylesheets.addAll(
+  BasicStyles.resourceUrl.toExternalForm,
+
+  //Your additional CSS resources, if any
+)
+```
+
+### The CSS tree for the "basic" package
+
+To create your own CSS files that customize the visual appearance of the renderers provided by the **basic** package, please use the following CSS selectors:
+
+* **.graph** - a BasicBackgroundNode
+
+* **.graph > .backgroundRectangle** - the rectangle used as the background of the graph
+
+* **.graph > .selectionRectangle** - the selection rectangle
+
+* **.vertex** - a BasicVertexNode
+
+* **.vertex > .body** - the rectangle used as the vertex body
+
+* **.vertex > .label** - the vertex label
+
+* **.link** - a BasicLinkNode
+
+* **.link > .line** - any line making up a link - including both the link body and its arrow
+
+* **.link > .label** - the label of a link
+
+* **.link > .labelConnector** - the line connecting a link label and its link
+
+* **.link > .internalPointHandle** - the point joining 2 consecutive segments of a link
+
+
+**PLEASE, NOTE**: **VisualVertex** and **VisualLink** also have a **styleClass** property that, when set to a non-empty value, is **added** to the default class for the renderer (**.vertex** and **.link**, respectively). In other words, if you assign a vertex a styleClass named **solution**, you can style its label using this selector:
+
+> .solution > .label
 
 
 ## About the name
