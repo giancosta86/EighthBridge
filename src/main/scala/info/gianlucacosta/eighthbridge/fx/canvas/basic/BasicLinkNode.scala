@@ -48,7 +48,7 @@ L <: BasicLink[L],
 G <: VisualGraph[V, L, G]
 ](val sourceVertexId: UUID, val targetVertexId: UUID) extends Group with LinkNode[V, L, G] {
 
-  private class LinkSegment(indexOfNewInternalPoint: Int) extends Segment {
+  protected class LinkSegment(indexOfNewInternalPoint: Int) extends Segment {
     styleClass.add("line")
 
     strokeLineCap = StrokeLineCap.Round
@@ -78,11 +78,11 @@ G <: VisualGraph[V, L, G]
     }
   }
 
-  private class LinkArrow(segment: LinkSegment) extends Group {
+  protected class LinkArrow(segment: LinkSegment) extends Group {
     styleClass.add("line")
 
-    private val leftSegment = new Line()
-    private val rightSegment = new Line()
+    protected val leftSegment = new Line()
+    protected val rightSegment = new Line()
 
     children.addAll(leftSegment, rightSegment)
 
@@ -139,7 +139,7 @@ G <: VisualGraph[V, L, G]
   }
 
 
-  private class InternalPointHandle(initialCenter: Point2D) extends Ellipse {
+  protected class InternalPointHandle(initialCenter: Point2D) extends Ellipse {
     styleClass.add("internalPointHandle")
 
     opacity <== when(hover) choose 1 otherwise 0
@@ -220,7 +220,7 @@ G <: VisualGraph[V, L, G]
   }
 
 
-  private class LinkLabelConnector extends Line {
+  protected class LinkLabelConnector extends Line {
     styleClass.add("labelConnector")
 
     visible = false
@@ -234,7 +234,7 @@ G <: VisualGraph[V, L, G]
   }
 
 
-  private class LinkLabel extends Text {
+  protected class LinkLabel extends Text {
     styleClass.add("label")
 
     textOrigin = VPos.Top
@@ -290,14 +290,14 @@ G <: VisualGraph[V, L, G]
 
   private var dragAnchor: Point2D = _
 
-  private var segments: List[LinkSegment] = List()
-  private var arrow: LinkArrow = _
-  private var internalPointHandles: Map[Point2D, InternalPointHandle] = Map()
+  protected var segments: List[LinkSegment] = List()
+  protected var arrow: LinkArrow = _
+  protected var internalPointHandles: Map[Point2D, InternalPointHandle] = Map()
 
-  private val linkLabelConnector = new LinkLabelConnector
+  protected val linkLabelConnector = new LinkLabelConnector
   children.add(linkLabelConnector)
 
-  private var label: LinkLabel = new LinkLabel
+  protected var label: LinkLabel = new LinkLabel
   children.add(label)
 
 

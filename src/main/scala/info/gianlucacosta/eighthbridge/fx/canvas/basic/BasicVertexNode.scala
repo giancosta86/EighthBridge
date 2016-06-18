@@ -52,11 +52,11 @@ G <: VisualGraph[V, L, G]
 
   private var dragAnchor: Point2D = _
 
-  private val body = new Rectangle {
+  protected val body = new Rectangle {
     styleClass.add("body")
   }
 
-  private val label = new Text {
+  protected val label = new Text {
     styleClass.add("label")
 
     textOrigin = VPos.Top

@@ -56,15 +56,16 @@ G <: VisualGraph[V, L, G]
   private var dragAnchor: Point2D = _
 
 
-  private val backgroundRectangle = new Rectangle {
+  protected val backgroundRectangle = new Rectangle {
     styleClass.add("backgroundRectangle")
     x = 0
     y = 0
   }
 
-  private val selectionRectangle = new Rectangle {
+  protected val selectionRectangle = new Rectangle {
     styleClass.add("selectionRectangle")
   }
+
 
   children.addAll(
     backgroundRectangle,
