@@ -32,5 +32,9 @@ trait BasicVertex[V <: BasicVertex[V]] extends VisualVertex[V] {
 
   def padding: Double
 
+  def widthOption: Option[Double]
+
+  def heightOption: Option[Double]
+
   override def toString: String = text
 }

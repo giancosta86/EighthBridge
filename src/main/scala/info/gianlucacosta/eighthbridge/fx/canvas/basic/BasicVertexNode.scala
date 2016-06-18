@@ -104,10 +104,18 @@ G <: VisualGraph[V, L, G]
 
     val padding = vertex.padding
 
-    body.width = labelWidth + 2 * padding
-    body.height = labelHeight + 2 * padding
-    body.layoutX = labelX - padding
-    body.layoutY = labelY - padding
+    body.width =
+      vertex.widthOption.getOrElse(
+        labelWidth + 2 * padding
+      )
+
+    body.height =
+      vertex.heightOption.getOrElse(
+        labelHeight + 2 * padding
+      )
+
+    body.layoutX = labelX - body.width() / 2
+    body.layoutY = labelY - body.height() / 2
   }
 
 

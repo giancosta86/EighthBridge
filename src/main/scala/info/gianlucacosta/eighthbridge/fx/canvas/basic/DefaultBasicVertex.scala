@@ -29,6 +29,8 @@ import scalafx.geometry.Point2D
   */
 case class DefaultBasicVertex(
                                padding: Double = 8,
+                               widthOption: Option[Double] = None,
+                               heightOption: Option[Double] = None,
                                text: String = "",
                                styleClass: String = "",
                                center: Point2D = Point2D.Zero,
