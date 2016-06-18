@@ -23,18 +23,14 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
+import info.gianlucacosta.helios.fx.styles.PseudoClasses
 
 import scalafx.Includes._
-import scalafx.css.PseudoClass
 import scalafx.geometry.{Point2D, VPos}
 import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.text.Text
-
-object BasicVertexNode {
-  private val SelectedPseudoClass = PseudoClass("selected")
-}
 
 /**
   * Default, interactive implementation of VertexNode
@@ -88,7 +84,7 @@ G <: VisualGraph[V, L, G]
     }
 
     this.pseudoClassStateChanged(
-      BasicVertexNode.SelectedPseudoClass,
+      PseudoClasses.Selected,
       vertex.selected
     )
 

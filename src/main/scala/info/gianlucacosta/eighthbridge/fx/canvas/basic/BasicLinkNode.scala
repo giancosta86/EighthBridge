@@ -26,19 +26,15 @@ import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 import info.gianlucacosta.helios.fx.geometry.{DiagonalBounds, Segment}
+import info.gianlucacosta.helios.fx.styles.PseudoClasses
 
 import scalafx.Includes._
-import scalafx.css.PseudoClass
 import scalafx.geometry.{Point2D, VPos}
 import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape._
 import scalafx.scene.text.Text
 
-
-object BasicLinkNode {
-  private val SelectedPseudoClass = PseudoClass("selected")
-}
 
 /**
   * Default, interactive implementation of LinkNode
@@ -407,7 +403,7 @@ G <: VisualGraph[V, L, G]
       styleClass.add(link.styleClass)
     }
 
-    this.pseudoClassStateChanged(BasicLinkNode.SelectedPseudoClass, link.selected)
+    this.pseudoClassStateChanged(PseudoClasses.Selected, link.selected)
 
 
     val sourceVertex = graph.getVertex(sourceVertexId).get
