@@ -22,12 +22,13 @@ package info.gianlucacosta.eighthbridge.fx.canvas
 
 import java.util.UUID
 import javafx.beans.Observable
-import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.{SimpleBooleanProperty, SimpleDoubleProperty, SimpleObjectProperty}
 
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
 import scalafx.Includes._
-import scalafx.scene.input.{KeyCode, KeyEvent}
+import scalafx.geometry.Point2D
+import scalafx.scene.input.{KeyCode, KeyEvent, MouseEvent, ScrollEvent}
 import scalafx.scene.layout.Pane
 import scalafx.scene.shape.Rectangle
 
@@ -69,6 +70,52 @@ G <: VisualGraph[V, L, G]
   def graph_=(newValue: G): Unit = {
     graphProperty() = newValue
   }
+
+
+  val zoomEnabledProperty = new SimpleBooleanProperty(true)
+
+
+  def zoomEnabled: Boolean =
+    zoomEnabledProperty.get
+
+
+  def zoomEnabled_=(newValue: Boolean): Unit =
+    zoomEnabledProperty.set(newValue)
+
+
+  val minZoomScaleProperty = new SimpleDoubleProperty(0.2)
+
+
+  def minZoomScale: Double =
+    minZoomScaleProperty.get
+
+
+  def minZoomScale_=(newValue: Double) =
+    minZoomScaleProperty.set(newValue)
+
+
+
+  val maxZoomScaleProperty = new SimpleDoubleProperty(Double.PositiveInfinity)
+
+
+  def maxZoomScale: Double =
+    maxZoomScaleProperty.get
+
+
+  def maxZoomScale_=(newValue: Double) =
+    maxZoomScaleProperty.set(newValue)
+
+
+
+  val panEnabledProperty = new SimpleBooleanProperty(true)
+
+
+  def panEnabled: Boolean =
+    panEnabledProperty.get
+
+
+  def panEnabled_=(newValue: Boolean): Unit =
+    panEnabledProperty.set(newValue)
 
 
   private val backgroundNode: BackgroundNode[V, L, G] = controller.createBackgroundNode()
@@ -169,6 +216,95 @@ G <: VisualGraph[V, L, G]
             .foreach(newGraph => graph = newGraph)
 
         case _ =>
+      }
+    }
+  }
+
+
+  handleEvent(ScrollEvent.Scroll) {
+    (event: ScrollEvent) => {
+      if (zoomEnabled) {
+        event.consume()
+
+        val oldScale = scaleX()
+
+        val scaleFactor = math.pow(1.01, event.deltaY / 5)
+
+        val newScale = math.max(
+          minZoomScale,
+
+          math.min(
+            maxZoomScale,
+
+            oldScale * scaleFactor
+          )
+        )
+
+        scaleX() = newScale
+        scaleY() = newScale
+
+        val zoomFactor = (newScale / oldScale) - 1
+
+        val canvasBounds = this.getBoundsInParent
+
+        val deltaX = event.sceneX - (canvasBounds.width / 2 + canvasBounds.minX)
+        val deltaY = event.sceneY - (canvasBounds.height / 2 + canvasBounds.minY)
+
+        translateX() -= zoomFactor * deltaX
+        translateY() -= zoomFactor * deltaY
+
+        ()
+      }
+    }
+  }
+
+
+  private var dragAnchor: Point2D = _
+  private var panning: Boolean = false
+
+
+  filterEvent(MouseEvent.MousePressed) {
+    (event: MouseEvent) => {
+      if (event.isControlDown && panEnabled) {
+        event.consume()
+
+        dragAnchor = new Point2D(
+          event.sceneX,
+          event.sceneY
+        )
+
+        panning = true
+      }
+    }
+  }
+
+
+  filterEvent(MouseEvent.MouseDragged) {
+    (event: MouseEvent) => {
+      if (panning) {
+        event.consume()
+
+        val delta = new Point2D(
+          event.sceneX - dragAnchor.x,
+          event.sceneY - dragAnchor.y
+        )
+
+        translateX() += delta.x
+        translateY() += delta.y
+
+        dragAnchor = new Point2D(event.sceneX, event.sceneY)
+      }
+    }
+  }
+
+
+  filterEvent(MouseEvent.MouseReleased) {
+    (event: MouseEvent) => {
+      if (panning) {
+        event.consume()
+
+        dragAnchor = null
+        panning = false
       }
     }
   }
