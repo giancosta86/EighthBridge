@@ -22,15 +22,14 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 import java.util.UUID
 
-import scalafx.geometry.Point2D
+import scalafx.geometry.{Dimension2D, Point2D}
 
 /**
   * Default BasicVertex implementation
   */
 case class DefaultBasicVertex(
                                padding: Double = 8,
-                               widthOption: Option[Double] = None,
-                               heightOption: Option[Double] = None,
+                               sizeOption: Option[Dimension2D] = None,
                                text: String = "",
                                styleClass: String = "",
                                center: Point2D = Point2D.Zero,

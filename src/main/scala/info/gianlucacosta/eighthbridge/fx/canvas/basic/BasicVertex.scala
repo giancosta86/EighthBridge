@@ -22,6 +22,8 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualVertex
 
+import scalafx.geometry.Dimension2D
+
 
 /**
   * Vertex dedicated to the "basic" package
@@ -32,9 +34,7 @@ trait BasicVertex[V <: BasicVertex[V]] extends VisualVertex[V] {
 
   def padding: Double
 
-  def widthOption: Option[Double]
-
-  def heightOption: Option[Double]
+  def sizeOption: Option[Dimension2D]
 
   override def toString: String = text
 }

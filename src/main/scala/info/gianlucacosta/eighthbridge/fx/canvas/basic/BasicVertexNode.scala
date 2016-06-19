@@ -30,7 +30,7 @@ import scalafx.geometry.{Point2D, VPos}
 import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape.Rectangle
-import scalafx.scene.text.Text
+import scalafx.scene.text.{Text, TextAlignment}
 
 /**
   * Default, interactive implementation of VertexNode
@@ -58,6 +58,8 @@ G <: VisualGraph[V, L, G]
 
   protected val label = new Text {
     styleClass.add("label")
+
+    textAlignment = TextAlignment.Center
 
     textOrigin = VPos.Top
   }
@@ -90,32 +92,39 @@ G <: VisualGraph[V, L, G]
 
 
     label.text = vertex.text
-    label.strokeWidth = 0
 
-    val textBounds = label.getBoundsInParent
+
+    val textBounds = label.getBoundsInLocal
     val labelWidth = textBounds.getWidth
     val labelHeight = textBounds.getHeight
 
-    val labelX = vertex.center.x - labelWidth / 2
-    val labelY = vertex.center.y - labelHeight / 2
+    label.layoutX = vertex.center.x - labelWidth / 2
+    label.layoutY = vertex.center.y - labelHeight / 2
 
-    label.x = labelX
-    label.y = labelY
+    vertex.sizeOption match {
+      case Some(vertexSize) =>
+        val width = vertexSize.width
+        val height = vertexSize.height
 
-    val padding = vertex.padding
+        body.width = width
+        body.height = height
 
-    body.width =
-      vertex.widthOption.getOrElse(
-        labelWidth + 2 * padding
-      )
+        body.layoutX = vertex.center.x - width / 2
+        body.layoutY = vertex.center.y - height / 2
 
-    body.height =
-      vertex.heightOption.getOrElse(
-        labelHeight + 2 * padding
-      )
 
-    body.layoutX = labelX - body.width() / 2
-    body.layoutY = labelY - body.height() / 2
+      case None =>
+        val padding = vertex.padding
+
+        val bodyWidth = labelWidth + 2 * padding
+        val bodyHeight = labelHeight + 2 * padding
+
+        body.width = bodyWidth
+        body.height = bodyHeight
+
+        body.layoutX = vertex.center.x - bodyWidth / 2
+        body.layoutY = vertex.center.y - bodyHeight / 2
+    }
   }
 
 
