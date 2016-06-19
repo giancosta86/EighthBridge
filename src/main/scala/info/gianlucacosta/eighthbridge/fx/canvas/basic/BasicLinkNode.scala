@@ -441,7 +441,7 @@ G <: VisualGraph[V, L, G]
       newSegment
     }
 
-    if (graph.directed) {
+    if (graph.renderDirected) {
       if (arrow != null) {
         children.remove(arrow)
       }

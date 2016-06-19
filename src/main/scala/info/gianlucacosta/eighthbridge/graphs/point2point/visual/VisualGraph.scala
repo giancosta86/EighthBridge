@@ -29,18 +29,18 @@ import scalafx.geometry.{Bounds, Dimension2D, Point2D}
   * Graph dedicated to rendering; it is especially useful in combination with GraphCanvas.
   *
   * Since such a graph is designed to be interactively drawn by users, it is necessarily
-  * based on arc bindings - however, its "directed" property enables renderers to draw it
+  * based on arc bindings - however, its "renderDirected" property enables renderers to draw it
   * with edges instead of arcs.
   */
 trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends DirectedGraph[V, L, G] {
   this: G =>
-  def directed: Boolean
+  def renderDirected: Boolean
 
   def dimension: Dimension2D
 
   def selectionBounds: Bounds
 
-  def visualCopy(directed: Boolean = directed, dimension: Dimension2D = dimension, selectionBounds: Bounds = selectionBounds): G
+  def visualCopy(renderDirected: Boolean = renderDirected, dimension: Dimension2D = dimension, selectionBounds: Bounds = selectionBounds): G
 
   @transient
   lazy val selectedVertexes: Set[V] =
