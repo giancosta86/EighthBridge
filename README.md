@@ -52,7 +52,9 @@ EighthBridge is designed to be simple and minimalist; however, we could now go t
 
 * **GraphComponent**: the trait shared by vertexes, links and bindings - it provides a unique UUID to identify each component
 
-* **VisualGraph**: the most important *Graph* subtrait, which is widely employed both in the rendering subsystem and in other projects - such as [GraphsJ](https://github.com/giancosta86/GraphsJ): its vertexes and links inherit from **VisualVertex** and **VisualLink**. Bindings for a visual graph are always **ArcBinding**'s - because when you draw a graph you implicitly work with arcs; however, it can easily be interpreted as an undirected graph, as shown in [Prim's Shortest Spanning Tree implementation](https://github.com/giancosta86/GraphsJ-scenarios).
+* **DirectedGraph**: trait providing utility functions for graphs based on **ArcBinding**
+
+* **VisualGraph**: the most important *DirectedGraph* subtrait, which is widely employed both in the rendering subsystem and in other projects - such as [GraphsJ](https://github.com/giancosta86/GraphsJ): its vertexes and links inherit from **VisualVertex** and **VisualLink**. Bindings for a visual graph are always **ArcBinding**'s - because when you draw a graph you implicitly work with arcs; however, it can easily be interpreted as an undirected graph, as shown in [Prim's Shortest Spanning Tree implementation](https://github.com/giancosta86/GraphsJ-scenarios).
 
 * **GraphCanvas**: the core ScalaFX component for interactive rendering. On construction, it requires a **GraphCanvasController** - telling how to draw graph components as JavaFX nodes and how to handle user interactions - as well as an initial *VisualGraph*, which gets replaced by new instances as the controller provides them in response to the user.
 
@@ -63,6 +65,16 @@ EighthBridge is designed to be simple and minimalist; however, we could now go t
 * **fx.canvas.basic.editing** is a package containing the utility trait **InteractiveEditingController** and its sub-traits
 
 For further information, a basic documentation can be found in its Scaladoc, which can be downloaded from the library's [section in Hephaestus](https://bintray.com/giancosta86/Hephaestus/EighthBridge). Finally, the full open source code is available on GitHub.
+
+
+## Enhanced graph interaction
+
+Starting from version 3, EighthBridge automatically provides interactive features very similar to map navigation:
+
+* **panning**: by pressing *CTRL* while clicking on a graph canvas, the user can drag the whole graph canvas (provided that **panEnabled** on **GraphCanvas** was true - the default)
+
+* **zooming**: by using the mouse wheel, the user can zoom in and out, if **zoomEnabled** is true - the default. Additional properties - **minZoomScale** and **maxZoomScale** - allow fine-grained control.
+
 
 
 ## Styling graphs with CSS
