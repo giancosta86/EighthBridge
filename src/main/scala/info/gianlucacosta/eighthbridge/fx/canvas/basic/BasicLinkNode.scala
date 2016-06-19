@@ -79,10 +79,15 @@ G <: VisualGraph[V, L, G]
   }
 
   protected class LinkArrow(segment: LinkSegment) extends Group {
-    styleClass.add("line")
+    styleClass.add("arrow")
 
-    protected val leftSegment = new Line()
-    protected val rightSegment = new Line()
+    protected val leftSegment = new Line() {
+      styleClass.add("line")
+    }
+
+    protected val rightSegment = new Line() {
+      styleClass.add("line")
+    }
 
     children.addAll(leftSegment, rightSegment)
 

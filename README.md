@@ -111,7 +111,11 @@ To create your own CSS files that customize the visual appearance of the rendere
 
 * **.link** - a BasicLinkNode
 
-* **.link > .line** - any line making up a link - including both the link body and its arrow
+* **.link .line** - any line making up a link - including both the link body and its arrow
+
+* **.link > .arrow** - the arrow of a link
+
+* **.link > .arrow > .line** - the lines of a link arrow
 
 * **.link > .label** - the label of a link
 

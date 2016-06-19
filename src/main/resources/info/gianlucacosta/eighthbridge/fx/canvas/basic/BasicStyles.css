@@ -48,7 +48,7 @@
  *-------*/
 
 
-.link > .line {
+.link .line {
     -fx-stroke: #9fecf3;
     -fx-stroke-width: 5;
 }
@@ -74,7 +74,7 @@
  * LINKS - SELECTED
  *------------------*/
 
- .link:selected > .line {
+ .link:selected .line {
      -fx-stroke: #18ab00;
  }
 
