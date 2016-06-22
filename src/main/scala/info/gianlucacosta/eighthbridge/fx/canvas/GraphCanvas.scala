@@ -62,7 +62,6 @@ G <: VisualGraph[V, L, G]
     render()
   })
 
-
   def graph: G =
     graphProperty()
 
@@ -128,16 +127,16 @@ G <: VisualGraph[V, L, G]
 
   focusTraversable = true
 
+  private var latestRenderedGraph: Option[G] =
+    None
+
   render()
 
 
   private def render(): Unit = {
-    require(graph != null)
-
     val (newLinkNodes, linkNodesToRemove) = linkNodes.partition {
       case (linkId, linkNode) => graph.containsLink(linkId)
     }
-
     linkNodes = newLinkNodes
     linkNodesToRemove.values.foreach(children.remove)
 
@@ -203,8 +202,86 @@ G <: VisualGraph[V, L, G]
 
 
     backgroundNode.render()
-    linkNodes.values.foreach(_.render())
-    vertexNodes.values.foreach(_.render())
+
+
+    val latestRenderedVertexPointers: Set[Int] =
+      latestRenderedGraph
+        .map(_.vertexes.map(System.identityHashCode))
+        .getOrElse(Set())
+
+
+    val latestRenderedLinkPointers: Set[Int] =
+      latestRenderedGraph
+        .map(_.links.map(System.identityHashCode))
+        .getOrElse(Set())
+
+
+    val latestRenderedBindingPointers: Set[Int] =
+      latestRenderedGraph
+        .map(_.bindings.map(System.identityHashCode))
+        .getOrElse(Set())
+
+
+    val currentBindingPointers: Set[Int] =
+      graph.bindings.map(System.identityHashCode)
+
+
+    val linkVertexPointersOption: Option[Map[UUID, Set[Int]]] =
+      if (currentBindingPointers == latestRenderedBindingPointers)
+        Some(
+          graph.bindings.map(binding => {
+            val sourceVertex = graph.getVertex(binding.sourceVertexId).get
+            val targetVertex = graph.getVertex(binding.targetVertexId).get
+
+            binding.linkId -> Set(
+              sourceVertex,
+              targetVertex
+            ).map(System.identityHashCode)
+          })
+          .toMap
+        )
+      else
+        None
+
+
+
+    linkNodes.values.foreach(linkNode => {
+      val link = linkNode.link
+
+      val linkPointer =
+        System.identityHashCode(link)
+
+      val mustRenderLink =
+        !latestRenderedLinkPointers.contains(linkPointer) ||
+          linkVertexPointersOption.forall(linkVertexPointers => {
+            val vertexPointers: Set[Int] =
+              linkVertexPointers(link.id)
+
+            !vertexPointers.subsetOf(latestRenderedVertexPointers)
+          })
+
+
+      if (mustRenderLink) {
+        linkNode.render()
+      }
+    })
+
+    vertexNodes.values.foreach(vertexNode => {
+      val vertex =
+        vertexNode.vertex
+
+      val vertexPointer =
+        System.identityHashCode(vertex)
+
+      val mustRenderVertex =
+        !latestRenderedVertexPointers.contains(vertexPointer)
+
+      if (mustRenderVertex) {
+        vertexNode.render()
+      }
+    })
+
+    latestRenderedGraph = Some(graph)
   }
 
 
