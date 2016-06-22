@@ -37,9 +37,6 @@ G <: VisualGraph[V, L, G]
 
 
   def setGraphChangedListener(listener: VisualGraphChangedListener[V, L, G]): Unit = {
-    require(listener != null)
-    require(graphChangedListener.isEmpty)
-
     graphChangedListener = Some(listener)
   }
 
@@ -51,7 +48,6 @@ G <: VisualGraph[V, L, G]
     * @param newGraph
     */
   protected def notifyGraphChanged(newGraph: G): Unit = {
-    require(newGraph != null)
     graphChangedListener.foreach(_ (newGraph))
   }
 

@@ -175,7 +175,6 @@ G <: VisualGraph[V, L, G]
             mouseEvent.clickCount match {
               case 1 =>
                 val newInternalPoints = link.internalPoints.filter(internalPoint => internalPoint != center)
-                require(newInternalPoints.length == link.internalPoints.length - 1)
 
                 controller.deleteLinkInternalPoint(graph, link, newInternalPoints, center)
                   .foreach(newGraph => notifyGraphChanged(newGraph))
@@ -310,10 +309,6 @@ G <: VisualGraph[V, L, G]
     this.controller = controller.asInstanceOf[BasicController[V, L, G]]
     this.graph = graph
     this.link = link
-
-    require(this.controller != null)
-    require(this.graph != null)
-    require(this.link != null)
   }
 
 

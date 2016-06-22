@@ -71,10 +71,6 @@ G <: VisualGraph[V, L, G]
     this.controller = controller.asInstanceOf[BasicController[V, L, G]]
     this.graph = graph
     this.vertex = vertex
-
-    require(this.controller != null)
-    require(this.graph != null)
-    require(this.vertex != null)
   }
 
 

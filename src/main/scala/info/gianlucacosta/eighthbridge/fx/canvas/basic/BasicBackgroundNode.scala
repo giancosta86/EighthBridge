@@ -78,11 +78,6 @@ G <: VisualGraph[V, L, G]
     this.graph = graph
     this.vertexNodes = vertexNodes.asInstanceOf[Map[UUID, BasicVertexNode[V, L, G]]]
     this.linkNodes = linkNodes.asInstanceOf[Map[UUID, BasicLinkNode[V, L, G]]]
-
-    require(this.controller != null)
-    require(this.graph != null)
-    require(this.vertexNodes != null)
-    require(this.linkNodes != null)
   }
 
 
