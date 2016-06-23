@@ -26,7 +26,6 @@ import javafx.beans.property.{SimpleBooleanProperty, SimpleDoubleProperty, Simpl
 
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
-import scala.collection.immutable.HashSet
 import scalafx.Includes._
 import scalafx.geometry.Point2D
 import scalafx.scene.input.{KeyCode, KeyEvent, MouseEvent, ScrollEvent}
@@ -94,7 +93,6 @@ G <: VisualGraph[V, L, G]
     minZoomScaleProperty.set(newValue)
 
 
-
   val maxZoomScaleProperty = new SimpleDoubleProperty(Double.PositiveInfinity)
 
 
@@ -104,7 +102,6 @@ G <: VisualGraph[V, L, G]
 
   def maxZoomScale_=(newValue: Double) =
     maxZoomScaleProperty.set(newValue)
-
 
 
   val panEnabledProperty = new SimpleBooleanProperty(true)
@@ -237,7 +234,7 @@ G <: VisualGraph[V, L, G]
               targetVertex
             ).map(System.identityHashCode)
           })
-          .toMap
+            .toMap
         )
       else
         None
