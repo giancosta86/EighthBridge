@@ -20,8 +20,14 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
+
+object LinkArrow {
+  val Default = LinkArrow()
+}
+
+
 /**
-  * Link arrow settings
+  * Link arrow
   */
 case class LinkArrow(
                       angle: Double = math.Pi / 6,

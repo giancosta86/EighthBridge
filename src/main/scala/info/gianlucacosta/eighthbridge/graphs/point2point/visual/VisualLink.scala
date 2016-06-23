@@ -35,7 +35,7 @@ trait VisualLink[L <: VisualLink[L]] extends Link {
 
   def labelCenter: Option[Point2D]
 
-  def styleClass: String
+  def styleClasses: Seq[String]
 
   def visualCopy(
                   internalPoints: List[Point2D] = internalPoints,

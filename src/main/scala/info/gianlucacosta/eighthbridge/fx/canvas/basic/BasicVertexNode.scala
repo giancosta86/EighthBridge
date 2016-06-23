@@ -25,6 +25,7 @@ import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 import info.gianlucacosta.helios.fx.styles.PseudoClasses
 
+import scala.collection.JavaConversions._
 import scalafx.Includes._
 import scalafx.geometry.{Point2D, VPos}
 import scalafx.scene.Group
@@ -76,10 +77,8 @@ G <: VisualGraph[V, L, G]
 
   override def render(): Unit = {
     styleClass.setAll("vertex")
+    styleClass.addAll(vertex.styleClasses)
 
-    if (vertex.styleClass.nonEmpty) {
-      styleClass.add(vertex.styleClass)
-    }
 
     this.pseudoClassStateChanged(
       PseudoClasses.Selected,

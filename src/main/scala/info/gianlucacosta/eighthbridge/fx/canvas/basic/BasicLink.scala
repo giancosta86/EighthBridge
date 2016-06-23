@@ -29,7 +29,8 @@ trait BasicLink[L <: BasicLink[L]] extends VisualLink[L] {
   this: L =>
   def text: String
 
-  def arrow: LinkArrow
+  def arrow: LinkArrow =
+    LinkArrow.Default
 
   def handleRadius: LinkHandleRadius
 

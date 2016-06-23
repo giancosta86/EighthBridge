@@ -29,9 +29,8 @@ import scalafx.geometry.Point2D
   */
 case class DefaultBasicLink(
                              text: String = "",
-                             arrow: LinkArrow = LinkArrow(),
                              handleRadius: LinkHandleRadius = LinkHandleRadius(),
-                             styleClass: String = "",
+                             styleClasses: Seq[String] = Seq(),
                              internalPoints: List[Point2D] = List(),
                              selected: Boolean = false,
                              labelCenter: Option[Point2D] = None,

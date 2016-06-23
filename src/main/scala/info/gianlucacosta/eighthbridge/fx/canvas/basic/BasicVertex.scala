@@ -51,6 +51,16 @@ trait BasicVertex[V <: BasicVertex[V]] extends VisualVertex[V] {
   this: V =>
   def text: String
 
+  /**
+    * This property must now be implemented, and should return the
+    * overall dimension expected for the rendered vertex (as it will be
+    * used by renderers).
+    *
+    * You can return the exact size you need, a custom heuristic value
+    * or employ the provided heuristic function: BasicVertex.estimateVertexSize()
+    *
+    * @return The vertex dimension
+    */
   def dimension: Dimension2D
 
   override def toString: String = text

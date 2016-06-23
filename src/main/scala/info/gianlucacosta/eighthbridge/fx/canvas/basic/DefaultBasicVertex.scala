@@ -30,7 +30,7 @@ import scalafx.geometry.{Dimension2D, Point2D}
 case class DefaultBasicVertex(
                                dimension: Dimension2D,
                                text: String = "",
-                               styleClass: String = "",
+                               styleClasses: Seq[String] = Seq(),
                                center: Point2D = Point2D.Zero,
                                selected: Boolean = false,
                                id: UUID = UUID.randomUUID()

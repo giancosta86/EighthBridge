@@ -28,6 +28,7 @@ import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 import info.gianlucacosta.helios.fx.geometry.{DiagonalBounds, Segment}
 import info.gianlucacosta.helios.fx.styles.PseudoClasses
 
+import scala.collection.JavaConversions._
 import scalafx.Includes._
 import scalafx.geometry.{Point2D, VPos}
 import scalafx.scene.Group
@@ -397,10 +398,8 @@ G <: VisualGraph[V, L, G]
 
   override def render(): Unit = {
     styleClass.setAll("link")
+    styleClass.addAll(link.styleClasses)
 
-    if (link.styleClass.nonEmpty) {
-      styleClass.add(link.styleClass)
-    }
 
     this.pseudoClassStateChanged(PseudoClasses.Selected, link.selected)
 
