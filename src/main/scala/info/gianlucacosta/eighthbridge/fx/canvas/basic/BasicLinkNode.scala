@@ -91,7 +91,6 @@ G <: VisualGraph[V, L, G]
 
     children.addAll(leftSegment, rightSegment)
 
-    val relativePosition = link.arrow.relativePosition
     val angle = link.arrow.angle
     val length = link.arrow.length
 
@@ -99,8 +98,8 @@ G <: VisualGraph[V, L, G]
     val stopPoint = segment.endPoint
 
     val anchor = new Point2D(
-      startPoint.x + relativePosition * (stopPoint.x - startPoint.x),
-      startPoint.y + relativePosition * (stopPoint.y - startPoint.y)
+      startPoint.x + stopPoint.x - startPoint.x,
+      startPoint.y + stopPoint.y - startPoint.y
     )
 
     val gamma = Math.atan2(anchor.y - startPoint.y, anchor.x - startPoint.x)
@@ -426,8 +425,35 @@ G <: VisualGraph[V, L, G]
 
     segments.foreach(children.remove(_))
 
+    val targetAnchorPoint =
+      if (graph.renderDirected) {
+        val centersDelta =
+          sourceVertex.center - targetVertex.center
+
+
+        val intersectionWithTargetVerticalSide =
+          if (centersDelta.x != 0)
+            math.atan(math.abs(centersDelta.y / centersDelta.x)) <= math.atan(math.abs(targetVertex.dimension.height / targetVertex.dimension.width))
+          else
+            false
+
+        if (intersectionWithTargetVerticalSide)
+          new Point2D(
+            targetVertex.center.x + math.signum(centersDelta.x) * targetVertex.dimension.width / 2,
+
+            targetVertex.center.y + targetVertex.dimension.width / 2 * centersDelta.y / math.abs(centersDelta.x)
+          )
+        else
+          new Point2D(
+            targetVertex.center.x + targetVertex.dimension.height / 2 * centersDelta.x / math.abs(centersDelta.y),
+
+            targetVertex.center.y + math.signum(centersDelta.y) * targetVertex.dimension.height / 2
+          )
+      } else
+        targetVertex.center
+
     val sourcePoints = sourceVertex.center :: link.internalPoints
-    val targetPoints = link.internalPoints ++ List(targetVertex.center)
+    val targetPoints = link.internalPoints ++ List(targetAnchorPoint)
 
 
     segments = (sourcePoints zip targetPoints).zipWithIndex.map { case ((sourcePoint, targetPoint), internalPointIndex) =>

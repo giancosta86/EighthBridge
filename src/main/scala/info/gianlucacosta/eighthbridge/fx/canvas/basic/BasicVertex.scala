@@ -25,6 +25,25 @@ import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualVertex
 import scalafx.geometry.Dimension2D
 
 
+object BasicVertex {
+  def estimateVertexSize(text: String, fontDimension: Dimension2D, padding: Double): Dimension2D = {
+    val textLines = text.split("\n")
+
+    val width =
+      2 * padding +
+        fontDimension.width *
+          textLines
+            .map(_.length)
+            .max
+
+    val height =
+      2 * padding +
+        fontDimension.height * textLines.length
+
+    new Dimension2D(width, height)
+  }
+}
+
 /**
   * Vertex dedicated to the "basic" package
   */
@@ -32,9 +51,7 @@ trait BasicVertex[V <: BasicVertex[V]] extends VisualVertex[V] {
   this: V =>
   def text: String
 
-  def padding: Double
-
-  def sizeOption: Option[Dimension2D]
+  def dimension: Dimension2D
 
   override def toString: String = text
 }

@@ -28,8 +28,7 @@ import scalafx.geometry.{Dimension2D, Point2D}
   * Default BasicVertex implementation
   */
 case class DefaultBasicVertex(
-                               padding: Double = 8,
-                               sizeOption: Option[Dimension2D] = None,
+                               dimension: Dimension2D,
                                text: String = "",
                                styleClass: String = "",
                                center: Point2D = Point2D.Zero,

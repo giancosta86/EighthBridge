@@ -97,30 +97,17 @@ G <: VisualGraph[V, L, G]
     label.layoutX = vertex.center.x - labelWidth / 2
     label.layoutY = vertex.center.y - labelHeight / 2
 
-    vertex.sizeOption match {
-      case Some(vertexSize) =>
-        val width = vertexSize.width
-        val height = vertexSize.height
 
-        body.width = width
-        body.height = height
+    val dimension = vertex.dimension
 
-        body.layoutX = vertex.center.x - width / 2
-        body.layoutY = vertex.center.y - height / 2
+    val width = dimension.width
+    val height = dimension.height
 
+    body.width = width
+    body.height = height
 
-      case None =>
-        val padding = vertex.padding
-
-        val bodyWidth = labelWidth + 2 * padding
-        val bodyHeight = labelHeight + 2 * padding
-
-        body.width = bodyWidth
-        body.height = bodyHeight
-
-        body.layoutX = vertex.center.x - bodyWidth / 2
-        body.layoutY = vertex.center.y - bodyHeight / 2
-    }
+    body.layoutX = vertex.center.x - width / 2
+    body.layoutY = vertex.center.y - height / 2
   }
 
 
