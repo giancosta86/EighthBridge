@@ -124,7 +124,7 @@ To create your own CSS files that customize the visual appearance of the rendere
 * **.link > .internalPointHandle** - the point joining 2 consecutive segments of a link
 
 
-**PLEASE, NOTE**: **VisualVertex** and **VisualLink** also have a **styleClass** property that, when set to a non-empty value, is **added** to the default class for the renderer (**.vertex** and **.link**, respectively). In other words, if you assign a vertex a styleClass named **solution**, you can style its label using this selector:
+**PLEASE, NOTE**: **VisualVertex** and **VisualLink** also have a **styleClasses** property, whose values are **appended** to the default class for the renderer (**.vertex** and **.link**, respectively). In other words, if you assign a vertex a styleClass named **solution**, you can style its label using this selector:
 
 > .solution > .label
 
