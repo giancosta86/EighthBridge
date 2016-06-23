@@ -57,7 +57,7 @@ dependencies {
 
     compile 'org.scala-lang:scala-library:2.11.8'
 
-    compile 'info.gianlucacosta.helios:helios-core:2.6'
+    compile 'info.gianlucacosta.helios:helios-core:3.0'
 }
 
 
