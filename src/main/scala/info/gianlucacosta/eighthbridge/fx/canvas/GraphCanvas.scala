@@ -26,6 +26,7 @@ import javafx.beans.property.{SimpleBooleanProperty, SimpleDoubleProperty, Simpl
 
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
+import scala.collection.immutable.HashSet
 import scalafx.Includes._
 import scalafx.geometry.Point2D
 import scalafx.scene.input.{KeyCode, KeyEvent, MouseEvent, ScrollEvent}
@@ -127,8 +128,19 @@ G <: VisualGraph[V, L, G]
 
   focusTraversable = true
 
-  private var latestRenderedGraph: Option[G] =
-    None
+  private var dragAnchor: Point2D = _
+  private var panning: Boolean = false
+
+
+  private var latestRenderedVertexPointers =
+    Set[Int]()
+
+  private var latestRenderedLinkPointers =
+    Set[Int]()
+
+  private var latestRenderedBindingPointers =
+    Set[Int]()
+
 
   render()
 
@@ -146,7 +158,6 @@ G <: VisualGraph[V, L, G]
     }
     vertexNodes = newVertexNodes
     vertexNodesToRemove.values.foreach(children.remove)
-
 
 
     this.resize(graph.dimension.width, graph.dimension.height)
@@ -200,33 +211,21 @@ G <: VisualGraph[V, L, G]
     //This must be the last in order to have full information on vertex nodes and link nodes
     backgroundNode.setup(controller, graph, vertexNodes, linkNodes)
 
-
     backgroundNode.render()
 
-
-    val latestRenderedVertexPointers: Set[Int] =
-      latestRenderedGraph
-        .map(_.vertexes.map(System.identityHashCode))
-        .getOrElse(Set())
+    val currentVertexPointers: Set[Int] =
+      graph.vertexes.map(System.identityHashCode)
 
 
-    val latestRenderedLinkPointers: Set[Int] =
-      latestRenderedGraph
-        .map(_.links.map(System.identityHashCode))
-        .getOrElse(Set())
-
-
-    val latestRenderedBindingPointers: Set[Int] =
-      latestRenderedGraph
-        .map(_.bindings.map(System.identityHashCode))
-        .getOrElse(Set())
+    val currentLinkPointers: Set[Int] =
+      graph.links.map(System.identityHashCode)
 
 
     val currentBindingPointers: Set[Int] =
       graph.bindings.map(System.identityHashCode)
 
 
-    val linkVertexPointersOption: Option[Map[UUID, Set[Int]]] =
+    val currentLinkVertexPointersOption: Option[Map[UUID, Set[Int]]] =
       if (currentBindingPointers == latestRenderedBindingPointers)
         Some(
           graph.bindings.map(binding => {
@@ -253,7 +252,7 @@ G <: VisualGraph[V, L, G]
 
       val mustRenderLink =
         !latestRenderedLinkPointers.contains(linkPointer) ||
-          linkVertexPointersOption.forall(linkVertexPointers => {
+          currentLinkVertexPointersOption.forall(linkVertexPointers => {
             val vertexPointers: Set[Int] =
               linkVertexPointers(link.id)
 
@@ -281,7 +280,14 @@ G <: VisualGraph[V, L, G]
       }
     })
 
-    latestRenderedGraph = Some(graph)
+    latestRenderedVertexPointers =
+      currentVertexPointers
+
+    latestRenderedLinkPointers =
+      currentLinkPointers
+
+    latestRenderedBindingPointers =
+      currentBindingPointers
   }
 
 
@@ -334,10 +340,6 @@ G <: VisualGraph[V, L, G]
       }
     }
   }
-
-
-  private var dragAnchor: Point2D = _
-  private var panning: Boolean = false
 
 
   filterEvent(MouseEvent.MousePressed) {
