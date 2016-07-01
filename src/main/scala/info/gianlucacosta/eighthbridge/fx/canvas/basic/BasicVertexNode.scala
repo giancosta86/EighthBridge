@@ -27,11 +27,12 @@ import info.gianlucacosta.helios.fx.styles.PseudoClasses
 
 import scala.collection.JavaConversions._
 import scalafx.Includes._
-import scalafx.geometry.{Point2D, VPos}
+import scalafx.geometry.{Point2D, Pos}
 import scalafx.scene.Group
+import scalafx.scene.control.Label
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape.Rectangle
-import scalafx.scene.text.{Text, TextAlignment}
+import scalafx.scene.text.TextAlignment
 
 /**
   * Default, interactive implementation of VertexNode
@@ -57,12 +58,10 @@ G <: VisualGraph[V, L, G]
     styleClass.add("body")
   }
 
-  protected val label = new Text {
+  protected val label = new Label {
     styleClass.add("label")
-
+    alignment = Pos.Center
     textAlignment = TextAlignment.Center
-
-    textOrigin = VPos.Top
   }
 
   children.addAll(body, label)
@@ -85,18 +84,6 @@ G <: VisualGraph[V, L, G]
       vertex.selected
     )
 
-
-    label.text = vertex.text
-
-
-    val textBounds = label.getBoundsInLocal
-    val labelWidth = textBounds.getWidth
-    val labelHeight = textBounds.getHeight
-
-    label.layoutX = vertex.center.x - labelWidth / 2
-    label.layoutY = vertex.center.y - labelHeight / 2
-
-
     val dimension = vertex.dimension
 
     val width = dimension.width
@@ -104,9 +91,15 @@ G <: VisualGraph[V, L, G]
 
     body.width = width
     body.height = height
-
     body.layoutX = vertex.center.x - width / 2
     body.layoutY = vertex.center.y - height / 2
+
+
+    label.text = vertex.text
+
+    label.setPrefSize(width, height)
+    label.layoutX = body.layoutX()
+    label.layoutY = body.layoutY()
   }
 
 
