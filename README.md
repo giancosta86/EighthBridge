@@ -5,6 +5,8 @@
 
 ## Introduction
 
+![GraphPlan screenshot](screenshots/GraphPlan.png)
+
 
 EighthBridge is a ScalaFX library dedicated to:
 
