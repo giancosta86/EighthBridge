@@ -35,7 +35,7 @@ trait Binding extends GraphComponent {
     * The sorted list containing the ids of the attached vertexes.
     * The actual sort order depends on the specific binding implementation.
     */
-  val sortedVertexIds: Seq[UUID]
+  val sortedVertexIds: List[UUID]
 
   /**
     * The id of the attached link

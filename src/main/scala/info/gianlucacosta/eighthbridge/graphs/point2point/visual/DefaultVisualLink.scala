@@ -39,7 +39,7 @@ case class DefaultVisualLink(
 
                               labelCenter: Option[Point2D] = None,
 
-                              styleClasses: Seq[String] = Seq(),
+                              styleClasses: List[String] = List(),
 
                               id: UUID = UUID.randomUUID()
 

@@ -36,7 +36,7 @@ case class DefaultVisualVertex(
 
                                 selected: Boolean = false,
 
-                                styleClasses: Seq[String] = Seq(),
+                                styleClasses: List[String] = List(),
 
                                 id: UUID = UUID.randomUUID()
                               ) extends VisualVertex[DefaultVisualVertex] {

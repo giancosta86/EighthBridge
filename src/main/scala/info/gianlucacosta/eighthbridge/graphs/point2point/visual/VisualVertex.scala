@@ -33,7 +33,7 @@ trait VisualVertex[V <: VisualVertex[V]] extends Vertex {
 
   def selected: Boolean
 
-  def styleClasses: Seq[String]
+  def styleClasses: List[String]
 
   def visualCopy(center: Point2D = center,
                  selected: Boolean = selected): V
