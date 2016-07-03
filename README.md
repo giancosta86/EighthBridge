@@ -97,6 +97,8 @@ scene.getStylesheets.addAll(
 
 To create your own CSS files that customize the visual appearance of the renderers provided by the **basic** package, please use the following CSS selectors:
 
+* **.graphCanvas** - a GraphCanvas control
+
 * **.graph** - a BasicBackgroundNode
 
 * **.graph > .backgroundRectangle** - the rectangle used as the background of the graph

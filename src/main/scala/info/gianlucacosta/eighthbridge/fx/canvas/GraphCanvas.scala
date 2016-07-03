@@ -52,6 +52,8 @@ G <: VisualGraph[V, L, G]
   require(controller != null)
   require(initialGraph != null)
 
+  styleClass.add("graphCanvas")
+
   /**
     * This property is set whenever a new graph is set- programmatically or via
     * user interaction.
