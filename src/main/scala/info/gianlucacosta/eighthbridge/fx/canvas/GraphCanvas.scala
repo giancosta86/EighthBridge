@@ -343,7 +343,7 @@ G <: VisualGraph[V, L, G]
 
   filterEvent(MouseEvent.MousePressed) {
     (event: MouseEvent) => {
-      if (event.isControlDown && panEnabled) {
+      if (event.isShiftDown && panEnabled) {
         event.consume()
 
         dragAnchor = new Point2D(

@@ -73,9 +73,9 @@ For further information, a basic documentation can be found in its Scaladoc, whi
 
 Starting from version 3, EighthBridge automatically provides interactive features very similar to map navigation:
 
-* **panning**: by pressing *CTRL* while clicking on a graph canvas, the user can drag the whole graph canvas (provided that **panEnabled** on **GraphCanvas** was true - the default)
+* **pan**: by pressing *SHIFT* while clicking on a graph canvas, the user can drag the whole graph canvas (provided that **panEnabled** on **GraphCanvas** was true - the default)
 
-* **zooming**: by using the mouse wheel, the user can zoom in and out, if **zoomEnabled** is true - the default. Additional properties - **minZoomScale** and **maxZoomScale** - allow fine-grained control.
+* **zoom**: by using the mouse wheel, the user can zoom in and out, if **zoomEnabled** is true - the default. Additional properties - **minZoomScale** and **maxZoomScale** - allow fine-grained control.
 
 
 

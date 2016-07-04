@@ -45,7 +45,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.eighthbridge'
 archivesBaseName = 'eighthbridge'
-version = '6.0'
+version = '7.0'
 
 description = 'Interactive graph modeling and rendering for ScalaFX'
 
