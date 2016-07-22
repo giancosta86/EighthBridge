@@ -22,7 +22,9 @@ package info.gianlucacosta.eighthbridge.graphs.point2point
 
 import java.util.UUID
 
-import info.gianlucacosta.eighthbridge.graphs.{Graph, Link, Vertex}
+import info.gianlucacosta.eighthbridge.graphs._
+
+import scala.annotation.tailrec
 
 /**
   * A directed graph - that is, a graph whose Binding type parameter resolved to ArcBinding
@@ -58,7 +60,7 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
     * @param vertex
     * @return
     */
-  def enteringVertexes(vertex: V): Set[V] =
+  def getEnteringVertexes(vertex: V): Set[V] =
     bindings
       .filter(binding => binding.targetVertexId == vertex.id)
       .map(binding => getVertex(binding.sourceVertexId).get)
@@ -70,7 +72,7 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
     * @param vertex
     * @return
     */
-  def exitingVertexes(vertex: V): Set[V] =
+  def getExitingVertexes(vertex: V): Set[V] =
     bindings
       .filter(binding => binding.sourceVertexId == vertex.id)
       .map(binding => getVertex(binding.targetVertexId).get)
