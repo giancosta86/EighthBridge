@@ -342,13 +342,15 @@ G <: VisualGraph[V, L, G]
 
   handleEvent(MouseEvent.MouseEntered) {
     (mouseEvent: MouseEvent) => {
-      linkLabelConnector.visible = true
+      linkLabelConnector.visible =
+        link.text.nonEmpty
     }
   }
 
   handleEvent(MouseEvent.MouseExited) {
     (mouseEvent: MouseEvent) => {
-      linkLabelConnector.visible = false
+      linkLabelConnector.visible =
+        false
     }
   }
 
