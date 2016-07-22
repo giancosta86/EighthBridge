@@ -93,4 +93,29 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
           binding.targetVertexId == targetVertex.id
       )
       .map(binding => getLink(binding.linkId).get)
+
+
+  /**
+    * Returns the set of arcs whose source is the given vertex
+    *
+    * @param vertex
+    * @return
+    */
+  def getExitingArcs(vertex: V): Set[L] =
+    bindings
+      .filter(_.sourceVertexId == vertex.id)
+      .map(binding => getLink(binding.linkId).get)
+
+
+
+  /**
+    * Returns the set of arcs whose target is the given vertex
+    *
+    * @param vertex
+    * @return
+    */
+  def getEnteringArcs(vertex: V): Set[L] =
+    bindings
+      .filter(_.targetVertexId == vertex.id)
+      .map(binding => getLink(binding.linkId).get)
 }
