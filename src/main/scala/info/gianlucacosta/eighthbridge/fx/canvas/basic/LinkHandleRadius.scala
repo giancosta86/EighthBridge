@@ -20,6 +20,12 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
+
+object LinkHandleRadius {
+  val Default =
+    LinkHandleRadius()
+}
+
 /**
   * Link internal point handle settings
   */
