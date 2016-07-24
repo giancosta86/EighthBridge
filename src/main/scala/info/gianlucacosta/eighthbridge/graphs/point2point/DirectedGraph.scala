@@ -118,4 +118,179 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
     bindings
       .filter(_.targetVertexId == vertex.id)
       .map(binding => getLink(binding.linkId).get)
+
+
+  /**
+    * The vertexes having no entering arcs
+    */
+  lazy val rootVertexes: Set[V] =
+    vertexes
+      .filter(getEnteringArcs(_).isEmpty)
+
+
+  /**
+    * Function passed to fold(). Its signature must be:
+    * (cumulatedValue, currentEnteringArcs, currentVertex, currentExitingArcs) => newCumulatedValue
+    *
+    * where:
+    *
+    * <ul>
+    * <li><b>cumulatedValue</b> is the value cumulated until now</li>
+    * <li><b>currentEnteringArcs</b> is the set of arcs entering the current vertex</li>
+    * <li><b>currentVertex</b> is the vertex now explored by fold()</li>
+    * <li><b>currentExitingArcs</b> is the set of arcs exiting the current vertex</li>
+    * </ul>
+    *
+    * The function must return <b>newCumulatedValue</b>, used by fold() as the return value or to call the next VertexFoldProcessor
+    *
+    * @tparam T The type of the cumulated value
+    */
+  type VertexFoldProcessor[T] =
+  (T, Set[L], V, Set[L]) => T
+
+
+  /**
+    * Takes an initial value and applies the given <b>vertexProcessor</b> to every vertex
+    * reachable from the root vertexes, with the following rules:
+    *
+    * <ul>
+    * <li>Each node will be processed <b>only</b> if all of its <i>entering vertexes</i> have been processed</li>
+    *
+    * <li>Any cycle in the graph will cause a CircularGraphException</li>
+    * </ul>
+    *
+    * @param initialValue
+    * @param vertexProcessor
+    * @tparam T
+    * @return
+    */
+  def fold[T](initialValue: T)(vertexProcessor: VertexFoldProcessor[T]): T = {
+
+    val boundObjects: Set[(V, L, V)] =
+      bindings
+        .map(binding => {
+          val sourceVertex =
+            getVertex(binding.sourceVertexId).get
+
+          val link =
+            getLink(binding.linkId).get
+
+          val targetVertex =
+            getVertex(binding.targetVertexId).get
+
+
+          (sourceVertex, link, targetVertex)
+        })
+
+    val enteringArcsMap: Map[V, Set[L]] =
+      boundObjects
+        .groupBy(_._3)
+        .mapValues(_.map(tuple => tuple._2))
+
+    val exitingArcsMap: Map[V, Set[L]] =
+      boundObjects
+        .groupBy(_._1)
+        .mapValues(_.map(tuple => tuple._2))
+
+
+    val exitingVertexesMap: Map[V, Set[V]] =
+      boundObjects
+        .groupBy(_._1)
+        .mapValues(_.map(tuple => tuple._3))
+
+
+
+    fold(
+      initialValue,
+      vertexProcessor,
+      enteringArcsMap,
+      exitingArcsMap,
+      exitingVertexesMap,
+      Set(),
+      Set(),
+      rootVertexes.toList
+    )
+  }
+
+
+  @tailrec
+  private def fold[T](
+                       cumulatedValue: T,
+                       vertexProcessor: VertexFoldProcessor[T],
+                       enteringArcsMap: Map[V, Set[L]],
+                       exitingArcsMap: Map[V, Set[L]],
+                       exitingVertexesMap: Map[V, Set[V]],
+                       expandedVertexes: Set[V],
+                       exploredArcs: Set[L],
+                       fringe: List[V]
+                     ): T = {
+    fringe match {
+      case currentVertex :: fringeTail =>
+        if (expandedVertexes.contains(currentVertex)) {
+          throw new CircularGraphException
+        }
+
+
+        val currentEnteringArcs =
+          enteringArcsMap.getOrElse(currentVertex, Set())
+
+
+        if (!currentEnteringArcs.subsetOf(exploredArcs))
+          fold(
+            cumulatedValue,
+
+            vertexProcessor,
+
+            enteringArcsMap,
+            exitingArcsMap,
+            exitingVertexesMap,
+
+            expandedVertexes,
+
+            exploredArcs,
+
+            fringeTail
+          )
+        else {
+          val currentExitingArcs =
+            exitingArcsMap.getOrElse(currentVertex, Set())
+
+          val currentExitingVertexes =
+            exitingVertexesMap.getOrElse(currentVertex, Set())
+
+
+          val newValue =
+            vertexProcessor(
+              cumulatedValue,
+              currentEnteringArcs,
+              currentVertex,
+              currentExitingArcs
+            )
+
+
+          fold(
+            newValue,
+
+            vertexProcessor,
+
+            enteringArcsMap,
+            exitingArcsMap,
+            exitingVertexesMap,
+
+            expandedVertexes +
+              currentVertex,
+
+            exploredArcs ++
+              currentExitingArcs,
+
+            (fringeTail ++
+              currentExitingVertexes).distinct
+          )
+        }
+
+
+      case Nil =>
+        cumulatedValue
+    }
+  }
 }
