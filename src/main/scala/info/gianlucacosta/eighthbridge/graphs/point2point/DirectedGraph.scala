@@ -96,19 +96,6 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
 
 
   /**
-    * Returns the set of arcs whose source is the given vertex
-    *
-    * @param vertex
-    * @return
-    */
-  def getExitingArcs(vertex: V): Set[L] =
-    bindings
-      .filter(_.sourceVertexId == vertex.id)
-      .map(binding => getLink(binding.linkId).get)
-
-
-
-  /**
     * Returns the set of arcs whose target is the given vertex
     *
     * @param vertex
@@ -120,6 +107,20 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
       .map(binding => getLink(binding.linkId).get)
 
 
+
+  /**
+    * Returns the set of arcs whose source is the given vertex
+    *
+    * @param vertex
+    * @return
+    */
+  def getExitingArcs(vertex: V): Set[L] =
+    bindings
+      .filter(_.sourceVertexId == vertex.id)
+      .map(binding => getLink(binding.linkId).get)
+
+
+  
   /**
     * The vertexes having no entering arcs
     */
@@ -182,10 +183,12 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
           (sourceVertex, link, targetVertex)
         })
 
+
     val enteringArcsMap: Map[V, Set[L]] =
       boundObjects
         .groupBy(_._3)
         .mapValues(_.map(tuple => tuple._2))
+
 
     val exitingArcsMap: Map[V, Set[L]] =
       boundObjects
@@ -197,7 +200,6 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
       boundObjects
         .groupBy(_._1)
         .mapValues(_.map(tuple => tuple._3))
-
 
 
     fold(
@@ -226,11 +228,6 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
                      ): T = {
     fringe match {
       case currentVertex :: fringeTail =>
-        if (expandedVertexes.contains(currentVertex)) {
-          throw new CircularGraphException
-        }
-
-
         val currentEnteringArcs =
           enteringArcsMap.getOrElse(currentVertex, Set())
 
@@ -259,7 +256,7 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
             exitingVertexesMap.getOrElse(currentVertex, Set())
 
 
-          val newValue =
+          val newCumulatedValue =
             vertexProcessor(
               cumulatedValue,
               currentEnteringArcs,
@@ -269,7 +266,7 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
 
 
           fold(
-            newValue,
+            newCumulatedValue,
 
             vertexProcessor,
 
@@ -290,7 +287,10 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
 
 
       case Nil =>
-        cumulatedValue
+        if (expandedVertexes.size == vertexes.size)
+          cumulatedValue
+        else
+          throw new CircularGraphException
     }
   }
 }
