@@ -34,5 +34,6 @@ import info.gianlucacosta.eighthbridge.graphs.Binding
 case class EdgeBinding(id: UUID, vertexIds: Set[UUID], linkId: UUID)
   extends Binding {
 
-  override val sortedVertexIds: List[UUID] = vertexIds.toList.sorted
+  override val sortedVertexIds: List[UUID] =
+    vertexIds.toList.sorted
 }

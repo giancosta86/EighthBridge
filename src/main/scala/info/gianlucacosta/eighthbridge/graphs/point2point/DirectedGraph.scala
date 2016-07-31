@@ -67,7 +67,7 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
 
 
   /**
-    * Returns the set of the vertexes that are target of any arc leaving the given vertex
+    * Returns the set of the vertexes that are target of any arc exiting the given vertex
     *
     * @param vertex
     * @return
@@ -107,7 +107,6 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
       .map(binding => getLink(binding.linkId).get)
 
 
-
   /**
     * Returns the set of arcs whose source is the given vertex
     *
@@ -120,10 +119,10 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
       .map(binding => getLink(binding.linkId).get)
 
 
-  
   /**
     * The vertexes having no entering arcs
     */
+  @transient
   lazy val rootVertexes: Set[V] =
     vertexes
       .filter(getEnteringArcs(_).isEmpty)
@@ -140,6 +139,7 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
     * <li><b>currentEnteringArcs</b> is the set of arcs entering the current vertex</li>
     * <li><b>currentVertex</b> is the vertex now explored by fold()</li>
     * <li><b>currentExitingArcs</b> is the set of arcs exiting the current vertex</li>
+    * <li><b>currentExitingVertexes</b> is the set of vertexes that are target of an arc exiting the current vertex</li>
     * </ul>
     *
     * The function must return <b>newCumulatedValue</b>, used by fold() as the return value or to call the next VertexFoldProcessor
@@ -147,12 +147,12 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
     * @tparam T The type of the cumulated value
     */
   type VertexFoldProcessor[T] =
-  (T, Set[L], V, Set[L]) => T
+  (T, Set[L], V, Set[L], Set[V]) => T
 
 
   /**
     * Takes an initial value and applies the given <b>vertexProcessor</b> to every vertex
-    * reachable from the root vertexes, with the following rules:
+    * in the graph, starting from the root vertexes, with the following rules:
     *
     * <ul>
     * <li>Each node will be processed <b>only</b> if all of its <i>entering vertexes</i> have been processed</li>
@@ -261,7 +261,8 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
               cumulatedValue,
               currentEnteringArcs,
               currentVertex,
-              currentExitingArcs
+              currentExitingArcs,
+              currentExitingVertexes
             )
 
 

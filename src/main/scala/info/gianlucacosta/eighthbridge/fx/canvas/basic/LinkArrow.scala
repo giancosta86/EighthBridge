@@ -22,7 +22,10 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 
 object LinkArrow {
-  val Default = LinkArrow()
+  val Default = LinkArrow(
+    angle = math.Pi / 6,
+    length = 15
+  )
 }
 
 
@@ -30,6 +33,6 @@ object LinkArrow {
   * Link arrow
   */
 case class LinkArrow(
-                      angle: Double = math.Pi / 6,
-                      length: Double = 15
+                      angle: Double,
+                      length: Double
                     )

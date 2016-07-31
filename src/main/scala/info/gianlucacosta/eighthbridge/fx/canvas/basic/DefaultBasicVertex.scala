@@ -22,13 +22,12 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 import java.util.UUID
 
-import scalafx.geometry.{Dimension2D, Point2D}
+import scalafx.geometry.Point2D
 
 /**
   * Default BasicVertex implementation
   */
 case class DefaultBasicVertex(
-                               dimension: Dimension2D,
                                text: String = "",
                                styleClasses: List[String] = List(),
                                center: Point2D = Point2D.Zero,

@@ -10,7 +10,7 @@
 
 EighthBridge is a ScalaFX library dedicated to:
 
-* **graph modeling**, via its *Graph* and *GraphComponent* traits
+* **graph modeling**, via its *Graph* and *GraphElement* traits
 
 * **graph interactive rendering**, via a ScalaFX component named *GraphCanvas* and the related classes and traits - in particular, *VisualGraph*. Graphs are rendered in JavaFX, letting the developer choose how users can interact with every element
 
@@ -52,17 +52,17 @@ EighthBridge is designed to be simple and minimalist; however, we could now go t
 
 * **Binding**: since vertexes and links are immutable and exist a-priori, how to join them? Via a *Binding* object, which represents the juncture between a link and a collection of vertexes. The provided implementations are **EdgeBinding** and **ArcBinding**, for point-to-point connections. Bindings are immutable, too.
 
-* **GraphComponent**: the trait shared by vertexes, links and bindings - it provides a unique UUID to identify each component
+* **GraphElement**: the trait shared by vertexes, links and bindings - it provides a unique UUID to identify each element
 
 * **DirectedGraph**: trait providing utility functions for graphs based on **ArcBinding**
 
 * **VisualGraph**: the most important *DirectedGraph* subtrait, which is widely employed both in the rendering subsystem and in other projects - such as [GraphsJ](https://github.com/giancosta86/GraphsJ): its vertexes and links inherit from **VisualVertex** and **VisualLink**. Bindings for a visual graph are always **ArcBinding**'s - because when you draw a graph you implicitly work with arcs; however, it can easily be interpreted as an undirected graph, as shown in [Prim's Shortest Spanning Tree implementation](https://github.com/giancosta86/GraphsJ-scenarios).
 
-* **GraphCanvas**: the core ScalaFX component for interactive rendering. On construction, it requires a **GraphCanvasController** - telling how to draw graph components as JavaFX nodes and how to handle user interactions - as well as an initial *VisualGraph*, which gets replaced by new instances as the controller provides them in response to the user.
+* **GraphCanvas**: the core ScalaFX component for interactive rendering. On construction, it requires a **GraphCanvasController** - telling how to draw graph elements as JavaFX nodes and how to handle user interactions - as well as an initial *VisualGraph*, which gets replaced by new instances as the controller provides them in response to the user.
 
-* **DefaultVisualGraph**, **DefaultVisualVertex** and **DefaultVisualLink** are default implementations of the visual traits - each having a related **.*Settings** case class to describe its visual appearance.
+* **DefaultVisualGraph**, **DefaultVisualVertex** and **DefaultVisualLink** are default implementations of the visual traits
 
-* **fx.canvas.basic** is a very important package providing default implementations of the ScalaFX nodes for rendering graph components, as well as **BasicController**, a fine-grained controller employed by such components to control user interaction.
+* **fx.canvas.basic** is a very important package providing default implementations of the ScalaFX nodes for rendering graph elements, as well as **BasicController**, a fine-grained controller employed by such components to handle user interaction.
 
 * **fx.canvas.basic.editing** is a package containing the utility trait **InteractiveEditingController** and its sub-traits
 

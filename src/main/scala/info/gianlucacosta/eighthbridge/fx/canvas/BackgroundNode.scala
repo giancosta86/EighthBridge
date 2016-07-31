@@ -20,8 +20,6 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas
 
-import java.util.UUID
-
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
 /**
@@ -31,19 +29,4 @@ trait BackgroundNode[
 V <: VisualVertex[V],
 L <: VisualLink[L],
 G <: VisualGraph[V, L, G]
-] extends GraphCanvasNode[V, L, G] {
-  /**
-    * Called by GraphCanvas at every rendering - before actually rendering any node
-    *
-    * @param controller
-    * @param graph
-    * @param vertexNodes
-    * @param linkNodes
-    */
-  def setup(
-             controller: GraphCanvasController[V, L, G],
-             graph: G,
-             vertexNodes: Map[UUID, VertexNode[V, L, G]],
-             linkNodes: Map[UUID, LinkNode[V, L, G]]
-           )
-}
+] extends GraphCanvasNode[V, L, G]

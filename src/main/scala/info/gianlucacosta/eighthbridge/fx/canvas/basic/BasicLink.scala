@@ -35,5 +35,6 @@ trait BasicLink[L <: BasicLink[L]] extends VisualLink[L] {
   def handleRadius: LinkHandleRadius =
     LinkHandleRadius.Default
 
-  override def toString: String = text
+  override def toString: String =
+    text
 }

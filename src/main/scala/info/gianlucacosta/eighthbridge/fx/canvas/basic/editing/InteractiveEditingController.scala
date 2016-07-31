@@ -20,6 +20,7 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic.editing
 
+import info.gianlucacosta.eighthbridge.fx.canvas.GraphCanvas
 import info.gianlucacosta.eighthbridge.fx.canvas.basic.{BasicController, BasicLink, BasicVertex}
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 import info.gianlucacosta.helios.fx.dialogs.Alerts
@@ -51,26 +52,28 @@ trait InteractiveEditingController[V <: BasicVertex[V], L <: BasicLink[L], G <: 
     )
 
 
-  override def deleteSelection(graph: G): Option[G] = {
-    val selectedVertexes = graph.selectedVertexes
-    val selectedLinks = graph.selectedLinks
+  override def deleteSelection(graphCanvas: GraphCanvas[V, L, G], graph: G): Option[G] = {
+    val selectedVertexes =
+      graph.selectedVertexes
+
+    val selectedLinks =
+      graph.selectedLinks
 
     Some(
       graph
-        .removeVertexes(selectedVertexes)
         .removeLinks(selectedLinks)
+        .removeVertexes(selectedVertexes)
     )
   }
 
 
-  override def dragSelection(graph: G, delta: Point2D): Option[G] =
-    Some(
-      graph.moveSelectedVertexesBy(delta)
-    )
+  override def canDrawSelectionRectangle: Boolean =
+    true
 
 
   override def createLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] = {
-    val newLink = link.visualCopy(internalPoints = newInternalPoints)
+    val newLink =
+      link.visualCopy(internalPoints = newInternalPoints)
 
     Some(
       graph.replaceLink(newLink)
@@ -83,7 +86,8 @@ trait InteractiveEditingController[V <: BasicVertex[V], L <: BasicLink[L], G <: 
 
 
   override def deleteLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] = {
-    val newLink = link.visualCopy(internalPoints = newInternalPoints)
+    val newLink =
+      link.visualCopy(internalPoints = newInternalPoints)
 
     Some(
       graph.replaceLink(newLink)
@@ -91,11 +95,12 @@ trait InteractiveEditingController[V <: BasicVertex[V], L <: BasicLink[L], G <: 
   }
 
   override def dragLinkLabel(graph: G, link: L, oldCenter: Point2D, newCenter: Point2D): Option[G] = {
-    val newLink = link.visualCopy(
-      labelCenter = Some(
-        newCenter
+    val newLink =
+      link.visualCopy(
+        labelCenter = Some(
+          newCenter
+        )
       )
-    )
 
     Some(
       graph.replaceLink(newLink)
@@ -106,13 +111,15 @@ trait InteractiveEditingController[V <: BasicVertex[V], L <: BasicLink[L], G <: 
   override def editVertex(graph: G, vertex: V): Option[G] = {
     while (true) {
       try {
-        val editResult = interactiveVertexEditing(graph, vertex.asInstanceOf[V])
+        val editResult =
+          interactiveVertexEditing(graph, vertex.asInstanceOf[V])
 
         if (editResult.isEmpty) {
           return None
         }
 
-        val newVertex = editResult.get
+        val newVertex =
+          editResult.get
 
         return Some(graph.replaceVertex(newVertex))
       } catch {
@@ -141,18 +148,20 @@ trait InteractiveEditingController[V <: BasicVertex[V], L <: BasicLink[L], G <: 
   override def editLink(graph: G, link: L): Option[G] = {
     while (true) {
       try {
-        val editResult = interactiveLinkEditing(graph, link.asInstanceOf[L])
+        val editResult =
+          interactiveLinkEditing(graph, link.asInstanceOf[L])
 
         if (editResult.isEmpty) {
           return None
         }
 
-        val newLink = editResult.get
+        val newLink =
+          editResult.get
 
         return Some(graph.replaceLink(newLink))
       } catch {
         case ex: IllegalArgumentException =>
-          Alerts.showWarning(ex.getMessage, "Edit vertex")
+          Alerts.showWarning(ex.getMessage, "Edit link")
       }
     }
 

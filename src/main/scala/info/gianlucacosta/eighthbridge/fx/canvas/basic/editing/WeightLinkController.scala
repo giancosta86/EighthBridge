@@ -31,17 +31,20 @@ import info.gianlucacosta.helios.fx.dialogs.InputDialogs
   * @tparam V Vertex
   * @tparam L Link
   */
-trait WeightLinkController[V <: BasicVertex[V], L <: BasicLink[L] with Weighted[L], G <: VisualGraph[V, L, G]] extends InteractiveEditingController[V, L, G] {
+trait WeightLinkController[V <: BasicVertex[V], L <: BasicLink[L] with Weighted[L], G <: VisualGraph[V, L, G]]
+  extends InteractiveEditingController[V, L, G] {
   override protected def interactiveLinkEditing(graph: G, link: L): Option[L] = {
-    val weightInputResult = InputDialogs.askForDouble("Weight:", link.weight, link.minWeight, link.maxWeight, "Edit link")
-    if (weightInputResult.isEmpty) {
-      return None
-    }
+    val newWeightOption =
+      InputDialogs.askForDouble(
+        "Weight:",
+        link.weight,
+        link.minWeight,
+        link.maxWeight,
+        "Edit link"
+      )
 
-    val newWeight = weightInputResult.get
-
-    Some(
+    newWeightOption.map(newWeight => {
       link.weightCopy(newWeight)
-    )
+    })
   }
 }

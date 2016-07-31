@@ -37,11 +37,13 @@ import scalafx.geometry.Point2D
   * @tparam V Vertex
   * @tparam L Link
   */
-trait VertexNamingController[V <: BasicVertex[V] with Named[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends InteractiveEditingController[V, L, G] {
+trait VertexNamingController[V <: BasicVertex[V] with Named[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]]
+  extends InteractiveEditingController[V, L, G] {
   /**
     * The first index used when creating vertexes
     */
-  protected val firstIndex = 1
+  protected val firstIndex =
+    1
 
   /**
     * Given a vertex index, returns the vertex name
@@ -49,7 +51,8 @@ trait VertexNamingController[V <: BasicVertex[V] with Named[V], L <: BasicLink[L
     * @param vertexIndex
     * @return
     */
-  protected def getVertexName(vertexIndex: Int): String = s"V${vertexIndex}"
+  protected def getVertexName(vertexIndex: Int): String =
+    s"V${vertexIndex}"
 
   /**
     * Actually instantiate the vertex
@@ -64,20 +67,25 @@ trait VertexNamingController[V <: BasicVertex[V] with Named[V], L <: BasicLink[L
   override def createVertex(graph: G, center: Point2D): Option[G] = {
     val lastUsedVertexIndex = Stream.from(firstIndex)
       .takeWhile(vertexIndex => {
-        val vertexName = getVertexName(vertexIndex)
+        val vertexName =
+          getVertexName(vertexIndex)
 
-        val vertexNameExists = graph.vertexes.exists(_.name == vertexName)
+        val vertexNameExists =
+          graph.vertexes.exists(_.name == vertexName)
 
         vertexNameExists
       })
       .lastOption
       .getOrElse(firstIndex - 1)
 
-    val vertexIndex = lastUsedVertexIndex + 1
+    val vertexIndex =
+      lastUsedVertexIndex + 1
 
-    val vertexName = getVertexName(vertexIndex)
+    val vertexName =
+      getVertexName(vertexIndex)
 
-    val newVertex = instantiateVertex(center, vertexName)
+    val newVertex =
+      instantiateVertex(center, vertexName)
 
     Some(
       graph.addVertex(newVertex)
@@ -86,14 +94,16 @@ trait VertexNamingController[V <: BasicVertex[V] with Named[V], L <: BasicLink[L
 
 
   override protected def interactiveVertexEditing(graph: G, vertex: V): Option[V] = {
-    val newNameInput = InputDialogs.askForString("Vertex name:", vertex.name, "Edit vertex")
+    val newNameInput =
+      InputDialogs.askForString("Vertex name:", vertex.name, "Edit vertex")
 
     if (newNameInput.isEmpty) {
       return None
     }
 
 
-    val newName = newNameInput.get
+    val newName =
+      newNameInput.get
 
     if (newName.isEmpty) {
       throw new IllegalArgumentException("The vertex must have a name!")
@@ -109,7 +119,8 @@ trait VertexNamingController[V <: BasicVertex[V] with Named[V], L <: BasicLink[L
       throw new IllegalArgumentException("The vertex name must be unique!")
     }
 
-    val newProblemVertex = vertex.nameCopy(name = newName)
+    val newProblemVertex =
+      vertex.nameCopy(name = newName)
 
     Some(newProblemVertex)
   }

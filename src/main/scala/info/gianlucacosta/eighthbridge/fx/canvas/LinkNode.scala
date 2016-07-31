@@ -21,6 +21,9 @@
 package info.gianlucacosta.eighthbridge.fx.canvas
 
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
+import info.gianlucacosta.helios.fx.styles.PseudoClasses
+
+import scala.collection.JavaConversions._
 
 /**
   * JavaFX node rendering a VisualLink
@@ -30,17 +33,30 @@ V <: VisualVertex[V],
 L <: VisualLink[L],
 G <: VisualGraph[V, L, G]
 ] extends GraphCanvasNode[V, L, G] {
-  /**
-    * Called by GraphCanvas at every rendering - before actually rendering any node
-    *
-    * @param controller
-    * @param graph
-    * @param link
-    */
-  def setup(
-             controller: GraphCanvasController[V, L, G],
-             graph: G,
-             link: L)
 
-  def link: L
+  private var _link: L = _
+
+  /**
+    * The underlying link, updated as rendering is performed
+    *
+    * @return
+    */
+  def link: L =
+    _link
+
+
+  private[canvas] def link_=(newLink: L): Unit =
+    _link = newLink
+
+
+  override def render(): Unit = {
+    styleClass.setAll("link")
+    styleClass.addAll(link.styleClasses)
+
+
+    this.pseudoClassStateChanged(
+      PseudoClasses.Selected,
+      link.selected
+    )
+  }
 }

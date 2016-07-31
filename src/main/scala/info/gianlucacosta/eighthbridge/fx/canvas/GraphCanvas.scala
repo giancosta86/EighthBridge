@@ -24,10 +24,11 @@ import java.util.UUID
 import javafx.beans.Observable
 import javafx.beans.property.{SimpleBooleanProperty, SimpleDoubleProperty, SimpleObjectProperty}
 
+import info.gianlucacosta.eighthbridge.graphs.point2point.ArcBinding
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
 import scalafx.Includes._
-import scalafx.geometry.Point2D
+import scalafx.geometry.{Dimension2D, Point2D}
 import scalafx.scene.input.{KeyCode, KeyEvent, MouseEvent, ScrollEvent}
 import scalafx.scene.layout.Pane
 import scalafx.scene.shape.Rectangle
@@ -48,32 +49,36 @@ class GraphCanvas[
 V <: VisualVertex[V],
 L <: VisualLink[L],
 G <: VisualGraph[V, L, G]
-](controller: GraphCanvasController[V, L, G], initialGraph: G) extends Pane {
+](val controller: GraphCanvasController[V, L, G], initialGraph: G) extends Pane {
   require(controller != null)
   require(initialGraph != null)
 
   styleClass.add("graphCanvas")
 
   /**
-    * This property is set whenever a new graph is set- programmatically or via
+    * This property is set whenever a new graph is set - programmatically or via
     * user interaction.
     */
-  val graphProperty = new SimpleObjectProperty[G](initialGraph)
+  val graphProperty =
+    new SimpleObjectProperty[G](initialGraph)
 
   graphProperty.addListener((observable: Observable) => {
+    //The canvas can only be updated by changing the graph
     render()
   })
+
 
   def graph: G =
     graphProperty()
 
 
-  def graph_=(newValue: G): Unit = {
-    graphProperty() = newValue
-  }
+  def graph_=(newValue: G): Unit =
+    graphProperty() =
+      newValue
 
 
-  val zoomEnabledProperty = new SimpleBooleanProperty(true)
+  val zoomEnabledProperty =
+    new SimpleBooleanProperty(true)
 
 
   def zoomEnabled: Boolean =
@@ -84,7 +89,8 @@ G <: VisualGraph[V, L, G]
     zoomEnabledProperty.set(newValue)
 
 
-  val minZoomScaleProperty = new SimpleDoubleProperty(0.2)
+  val minZoomScaleProperty =
+    new SimpleDoubleProperty(0.2)
 
 
   def minZoomScale: Double =
@@ -95,7 +101,8 @@ G <: VisualGraph[V, L, G]
     minZoomScaleProperty.set(newValue)
 
 
-  val maxZoomScaleProperty = new SimpleDoubleProperty(Double.PositiveInfinity)
+  val maxZoomScaleProperty =
+    new SimpleDoubleProperty(Double.PositiveInfinity)
 
 
   def maxZoomScale: Double =
@@ -106,7 +113,8 @@ G <: VisualGraph[V, L, G]
     maxZoomScaleProperty.set(newValue)
 
 
-  val panEnabledProperty = new SimpleBooleanProperty(true)
+  val panEnabledProperty =
+    new SimpleBooleanProperty(true)
 
 
   def panEnabled: Boolean =
@@ -117,18 +125,46 @@ G <: VisualGraph[V, L, G]
     panEnabledProperty.set(newValue)
 
 
-  private val backgroundNode: BackgroundNode[V, L, G] = controller.createBackgroundNode()
-  require(backgroundNode != null)
-  backgroundNode.setGraphChangedListener(newGraph => graph = newGraph)
+  clip = new Rectangle {
+    width <==
+      GraphCanvas.this.width
+
+    height <==
+      GraphCanvas.this.height
+  }
+
+
+  val backgroundNode: BackgroundNode[V, L, G] =
+    controller.createBackgroundNode(this)
+
   children.add(backgroundNode)
 
-  private var vertexNodes: Map[UUID, VertexNode[V, L, G]] = Map()
-  private var linkNodes: Map[UUID, LinkNode[V, L, G]] = Map()
 
-  focusTraversable = true
+  private var _vertexNodes: Map[UUID, VertexNode[V, L, G]] =
+    Map()
+
+
+  private var _linkNodes: Map[UUID, LinkNode[V, L, G]] =
+    Map()
+
+
+  def vertexNodes: Map[UUID, VertexNode[V, L, G]] =
+    _vertexNodes
+
+
+  def linkNodes: Map[UUID, LinkNode[V, L, G]] =
+    _linkNodes
+
+
+  focusTraversable =
+    true
+
 
   private var dragAnchor: Point2D = _
-  private var panning: Boolean = false
+
+
+  private var panning: Boolean =
+    false
 
 
   private var latestRenderedVertexPointers =
@@ -141,76 +177,50 @@ G <: VisualGraph[V, L, G]
     Set[Int]()
 
 
+  private var _dimension: Dimension2D =
+    new Dimension2D(
+      width(),
+      height()
+    )
+
+
+  def dimension: Dimension2D =
+    _dimension
+
+
+  width.addListener((observable: javafx.beans.Observable) => {
+    _dimension =
+      new Dimension2D(
+        width(),
+        height()
+      )
+  })
+
+
+  height.addListener((observable: javafx.beans.Observable) => {
+    _dimension =
+      new Dimension2D(
+        width(),
+        height()
+      )
+  })
+
+
   render()
 
 
   private def render(): Unit = {
-    val (newLinkNodes, linkNodesToRemove) = linkNodes.partition {
-      case (linkId, linkNode) => graph.containsLink(linkId)
-    }
-    linkNodes = newLinkNodes
-    linkNodesToRemove.values.foreach(children.remove)
+    purgeDanglingVertexNodes()
+    purgeDanglingLinkNodes()
+
+    updateVertexNodes()
+    updateLinkNodes()
 
 
-    val (newVertexNodes, vertexNodesToRemove) = vertexNodes.partition {
-      case (vertexId, vertexNode) => graph.containsVertex(vertexId)
-    }
-    vertexNodes = newVertexNodes
-    vertexNodesToRemove.values.foreach(children.remove)
+    vertexNodes
+      .values
+      .foreach(_.toFront())
 
-
-    this.resize(graph.dimension.width, graph.dimension.height)
-
-
-    clip = new Rectangle {
-      width = graph.dimension.width
-      height = graph.dimension.height
-    }
-
-
-    graph.bindings.foreach(binding => {
-      val link = graph.getLink(binding.linkId).get
-
-      val linkNode = linkNodes.getOrElse(
-        binding.linkId, {
-          val sourceVertex = graph.getVertex(binding.sourceVertexId).get
-          val targetVertex = graph.getVertex(binding.targetVertexId).get
-
-          val newLinkNode = controller.createLinkNode(sourceVertex, targetVertex, link)
-          newLinkNode.setGraphChangedListener(newGraph => graph = newGraph)
-
-          children.add(1 + linkNodes.size, newLinkNode)
-
-          linkNodes += (binding.linkId -> newLinkNode)
-
-          newLinkNode
-        })
-
-      linkNode.setup(controller, graph, link)
-    })
-
-
-    graph.vertexes.foreach(vertex => {
-      val vertexNode = vertexNodes.getOrElse(
-        vertex.id, {
-          val newVertexNode = controller.createVertexNode(vertex)
-          newVertexNode.setGraphChangedListener(newGraph => graph = newGraph)
-
-          children.add(1 + linkNodes.size + vertexNodes.size, newVertexNode)
-
-          vertexNodes += (vertex.id -> newVertexNode)
-
-          newVertexNode
-        })
-
-      vertexNode.setup(controller, graph, vertex)
-    })
-
-
-    //This must be the last in order to have full information on vertex nodes and link nodes
-    backgroundNode.setup(controller, graph, vertexNodes, linkNodes)
-
-    backgroundNode.render()
 
     val currentVertexPointers: Set[Int] =
       graph.vertexes.map(System.identityHashCode)
@@ -224,47 +234,161 @@ G <: VisualGraph[V, L, G]
       graph.bindings.map(System.identityHashCode)
 
 
-    val currentLinkVertexPointersOption: Option[Map[UUID, Set[Int]]] =
-      if (currentBindingPointers == latestRenderedBindingPointers)
-        Some(
-          graph.bindings.map(binding => {
-            val sourceVertex = graph.getVertex(binding.sourceVertexId).get
-            val targetVertex = graph.getVertex(binding.targetVertexId).get
-
-            binding.linkId -> Set(
-              sourceVertex,
-              targetVertex
-            ).map(System.identityHashCode)
-          })
-            .toMap
-        )
-      else
-        None
+    val currentLinkToVertexPointersOption: Option[Map[UUID, Set[Int]]] =
+      getLinkToVertexPointers(currentBindingPointers)
 
 
+    renderVertexes()
 
-    linkNodes.values.foreach(linkNode => {
-      val link = linkNode.link
+    resizeCanvas()
 
-      val linkPointer =
-        System.identityHashCode(link)
+    renderLinks(currentLinkToVertexPointersOption)
 
-      val mustRenderLink =
-        !latestRenderedLinkPointers.contains(linkPointer) ||
-          currentLinkVertexPointersOption.forall(linkVertexPointers => {
-            val vertexPointers: Set[Int] =
-              linkVertexPointers(link.id)
-
-            !vertexPointers.subsetOf(latestRenderedVertexPointers)
-          })
+    backgroundNode.render()
 
 
-      if (mustRenderLink) {
-        linkNode.render()
+    latestRenderedVertexPointers =
+      currentVertexPointers
+
+    latestRenderedLinkPointers =
+      currentLinkPointers
+
+    latestRenderedBindingPointers =
+      currentBindingPointers
+  }
+
+
+  private def purgeDanglingVertexNodes(): Unit = {
+    val (newVertexNodes, vertexNodesToRemove) =
+      _vertexNodes.partition {
+        case (vertexId, vertexNode) =>
+          graph.containsVertex(vertexId)
       }
+
+    _vertexNodes =
+      newVertexNodes
+
+    vertexNodesToRemove
+      .values
+      .foreach(children.remove)
+  }
+
+
+  private def purgeDanglingLinkNodes(): Unit = {
+    val (newLinkNodes, linkNodesToRemove) =
+      _linkNodes.partition {
+        case (linkId, linkNode) =>
+          graph.containsLink(linkId)
+      }
+
+    _linkNodes =
+      newLinkNodes
+
+    linkNodesToRemove.values.foreach(children.remove)
+  }
+
+
+  private def updateVertexNodes(): Unit = {
+    graph.vertexes.foreach(vertex => {
+      val vertexNode =
+        _vertexNodes.getOrElse(
+          vertex.id,
+          createVertexNode(vertex)
+        )
+
+      vertexNode.vertex =
+        vertex
+    })
+  }
+
+
+  private def createVertexNode(vertex: V): VertexNode[V, L, G] = {
+    val newVertexNode =
+      controller.createVertexNode(this, vertex)
+
+    newVertexNode.width.addListener((observable: javafx.beans.Observable) => {
+      resizeCanvas()
     })
 
-    vertexNodes.values.foreach(vertexNode => {
+
+    newVertexNode.height.addListener((observable: javafx.beans.Observable) => {
+      resizeCanvas()
+    })
+
+
+    children.add(
+      newVertexNode
+    )
+
+    _vertexNodes +=
+      (vertex.id -> newVertexNode)
+
+    newVertexNode
+  }
+
+
+  private def updateLinkNodes(): Unit = {
+    graph.bindings.foreach(binding => {
+      val link =
+        graph.getLink(binding.linkId).get
+
+      val linkNode =
+        _linkNodes.getOrElse(
+          binding.linkId,
+          createLinkNode(link, binding)
+        )
+
+      linkNode.link =
+        link
+    })
+  }
+
+
+  private def createLinkNode(link: L, binding: ArcBinding): LinkNode[V, L, G] = {
+    val sourceVertex =
+      graph.getVertex(binding.sourceVertexId).get
+
+    val targetVertex =
+      graph.getVertex(binding.targetVertexId).get
+
+    val newLinkNode =
+      controller.createLinkNode(this, sourceVertex, targetVertex, link)
+
+    children.add(
+      newLinkNode
+    )
+
+    _linkNodes +=
+      (binding.linkId -> newLinkNode)
+
+    newLinkNode
+  }
+
+
+  private def getLinkToVertexPointers(currentBindingPointers: Set[Int]): Option[Map[UUID, Set[Int]]] = {
+    if (currentBindingPointers == latestRenderedBindingPointers)
+      Some(
+        graph.bindings.map(binding => {
+          val sourceVertex =
+            graph.getVertex(binding.sourceVertexId).get
+
+          val targetVertex =
+            graph.getVertex(binding.targetVertexId).get
+
+          binding.linkId -> Set(
+            sourceVertex,
+            targetVertex
+          ).map(System.identityHashCode)
+        })
+          .toMap
+      )
+    else
+      None
+  }
+
+
+  private def renderVertexes(): Unit = {
+    _vertexNodes.values.foreach(vertexNode => {
       val vertex =
         vertexNode.vertex
 
@@ -278,15 +402,42 @@ G <: VisualGraph[V, L, G]
         vertexNode.render()
       }
     })
+  }
 
-    latestRenderedVertexPointers =
-      currentVertexPointers
 
-    latestRenderedLinkPointers =
-      currentLinkPointers
+  private def resizeCanvas(): Unit = {
+    val newDimension =
+      controller.getCanvasDimension(this)
 
-    latestRenderedBindingPointers =
-      currentBindingPointers
+    this.resize(
+      newDimension.width,
+      newDimension.height
+    )
+  }
+
+
+  def renderLinks(currentLinkToVertexPointersOption: Option[Map[UUID, Set[Int]]]): Unit = {
+    _linkNodes.values.foreach(linkNode => {
+      val link =
+        linkNode.link
+
+      val linkPointer =
+        System.identityHashCode(link)
+
+      val mustRenderLink =
+        !latestRenderedLinkPointers.contains(linkPointer) ||
+          currentLinkToVertexPointersOption.forall(linkVertexPointers => {
+            val vertexPointers: Set[Int] =
+              linkVertexPointers(link.id)
+
+            !vertexPointers.subsetOf(latestRenderedVertexPointers)
+          })
+
+
+      if (mustRenderLink) {
+        linkNode.render()
+      }
+    })
   }
 
 
@@ -294,8 +445,10 @@ G <: VisualGraph[V, L, G]
     (keyEvent: KeyEvent) => {
       keyEvent.code match {
         case KeyCode.Delete =>
-          controller.deleteSelection(graph)
-            .foreach(newGraph => graph = newGraph)
+          controller.deleteSelection(this, graph)
+            .foreach(newGraph =>
+              graph = newGraph
+            )
 
         case _ =>
       }
@@ -308,9 +461,11 @@ G <: VisualGraph[V, L, G]
       if (zoomEnabled) {
         event.consume()
 
-        val oldScale = scaleX()
+        val oldScale =
+          scaleX()
 
-        val scaleFactor = math.pow(1.01, event.deltaY / 5)
+        val scaleFactor =
+          math.pow(1.01, event.deltaY / 5)
 
         val newScale = math.max(
           minZoomScale,
@@ -322,18 +477,30 @@ G <: VisualGraph[V, L, G]
           )
         )
 
-        scaleX() = newScale
-        scaleY() = newScale
+        scaleX() =
+          newScale
 
-        val zoomFactor = (newScale / oldScale) - 1
+        scaleY() =
+          newScale
 
-        val canvasBounds = this.getBoundsInParent
+        val zoomFactor =
+          (newScale / oldScale) - 1
 
-        val deltaX = event.sceneX - (canvasBounds.width / 2 + canvasBounds.minX)
-        val deltaY = event.sceneY - (canvasBounds.height / 2 + canvasBounds.minY)
+        val canvasBounds =
+          this.getBoundsInParent
 
-        translateX() -= zoomFactor * deltaX
-        translateY() -= zoomFactor * deltaY
+
+        val deltaX =
+          event.sceneX - (canvasBounds.width / 2 + canvasBounds.minX)
+
+        val deltaY =
+          event.sceneY - (canvasBounds.height / 2 + canvasBounds.minY)
+
+        translateX() -=
+          zoomFactor * deltaX
+
+        translateY() -=
+          zoomFactor * deltaY
 
         ()
       }
@@ -346,12 +513,14 @@ G <: VisualGraph[V, L, G]
       if (event.isShiftDown && panEnabled) {
         event.consume()
 
-        dragAnchor = new Point2D(
-          event.sceneX,
-          event.sceneY
-        )
+        dragAnchor =
+          new Point2D(
+            event.sceneX,
+            event.sceneY
+          )
 
-        panning = true
+        panning =
+          true
       }
     }
   }
@@ -362,15 +531,20 @@ G <: VisualGraph[V, L, G]
       if (panning) {
         event.consume()
 
-        val delta = new Point2D(
-          event.sceneX - dragAnchor.x,
-          event.sceneY - dragAnchor.y
-        )
+        val delta =
+          new Point2D(
+            event.sceneX - dragAnchor.x,
+            event.sceneY - dragAnchor.y
+          )
 
-        translateX() += delta.x
-        translateY() += delta.y
+        translateX() +=
+          delta.x
 
-        dragAnchor = new Point2D(event.sceneX, event.sceneY)
+        translateY() +=
+          delta.y
+
+        dragAnchor =
+          new Point2D(event.sceneX, event.sceneY)
       }
     }
   }
@@ -381,8 +555,11 @@ G <: VisualGraph[V, L, G]
       if (panning) {
         event.consume()
 
-        dragAnchor = null
-        panning = false
+        dragAnchor =
+          null
+
+        panning =
+          false
       }
     }
   }

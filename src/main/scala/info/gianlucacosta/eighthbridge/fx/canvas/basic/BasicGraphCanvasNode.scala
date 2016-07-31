@@ -18,28 +18,14 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.graphs
+package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import java.util.UUID
+import info.gianlucacosta.eighthbridge.fx.canvas.GraphCanvasNode
+import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 
-/**
-  * Generic graph component (vertex, link, binding) - identified by UUID
-  */
-trait GraphComponent {
-  /**
-    * The unique identification value
-    */
-  val id: UUID
+trait BasicGraphCanvasNode[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]]
+  extends GraphCanvasNode[V, L, G] {
 
-  override final def equals(obj: Any): Boolean =
-    obj match {
-      case other: GraphComponent =>
-        id == other.id
-
-      case _ =>
-        false
-    }
-
-  override final def hashCode(): Int =
-    id.hashCode()
+  override def controller: BasicController[V, L, G] =
+    super.controller.asInstanceOf[BasicController[V, L, G]]
 }

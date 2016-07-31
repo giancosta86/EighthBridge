@@ -21,26 +21,16 @@
 package info.gianlucacosta.eighthbridge.graphs.point2point.visual
 
 import info.gianlucacosta.eighthbridge.graphs.point2point.DirectedGraph
-import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
-
-import scalafx.geometry.{Bounds, Dimension2D, Point2D}
 
 /**
   * Graph dedicated to rendering; it is especially useful in combination with GraphCanvas.
   *
   * Since such a graph is designed to be interactively drawn by users, it is necessarily
-  * based on arc bindings - however, its "renderDirected" property enables renderers to draw it
+  * based on arc bindings - therefore, it's up to the renderer to choose whether to draw it
   * with edges instead of arcs.
   */
 trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, L, G]] extends DirectedGraph[V, L, G] {
   this: G =>
-  def renderDirected: Boolean
-
-  def dimension: Dimension2D
-
-  def selectionBounds: Bounds
-
-  def visualCopy(renderDirected: Boolean = renderDirected, dimension: Dimension2D = dimension, selectionBounds: Bounds = selectionBounds): G
 
   @transient
   lazy val selectedVertexes: Set[V] =
@@ -78,12 +68,4 @@ trait VisualGraph[V <: VisualVertex[V], L <: VisualLink[L], G <: VisualGraph[V, 
           link.visualCopy(selected = selectionLinks.contains(link))
         )
       )
-
-
-  def moveSelectedVertexesBy(delta: Point2D): G =
-    replaceVertexes(selectedVertexes.map(vertex => {
-      val newCenter = (vertex.center + delta).clip(dimension)
-
-      vertex.visualCopy(center = newCenter)
-    }))
 }

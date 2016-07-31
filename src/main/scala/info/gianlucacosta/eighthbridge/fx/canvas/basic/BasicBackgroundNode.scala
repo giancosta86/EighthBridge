@@ -20,21 +20,25 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
-import java.util.UUID
+import javafx.beans.property.SimpleDoubleProperty
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
+import info.gianlucacosta.helios.fx.geometry.DiagonalBounds
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 
 import scalafx.Includes._
-import scalafx.geometry.{BoundingBox, Point2D}
+import scalafx.geometry.{BoundingBox, Bounds, Point2D}
 import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape.Rectangle
 
 object BasicBackgroundNode {
-  private val SelectionRectangleMinSize = 2
-  private val EmptySelectionBounds = new BoundingBox(0, 0, 0, 0)
+  private val SelectionRectangleMinSize =
+    2
+
+  private val EmptySelectionBounds =
+    new BoundingBox(0, 0, 0, 0)
 }
 
 /**
@@ -44,27 +48,73 @@ class BasicBackgroundNode[
 V <: BasicVertex[V],
 L <: BasicLink[L],
 G <: VisualGraph[V, L, G]
-] extends Group with BackgroundNode[V, L, G] {
+](val graphCanvas: GraphCanvas[V, L, G])
+  extends Group
+    with BackgroundNode[V, L, G]
+    with BasicGraphCanvasNode[V, L, G] {
   styleClass.add("graph")
-
-  private var controller: BasicController[V, L, G] = _
-  private var graph: G = _
-
-  private var vertexNodes: Map[UUID, BasicVertexNode[V, L, G]] = _
-  private var linkNodes: Map[UUID, BasicLinkNode[V, L, G]] = _
 
   private var dragAnchor: Point2D = _
 
 
-  protected val backgroundRectangle = new Rectangle {
-    styleClass.add("backgroundRectangle")
-    x = 0
-    y = 0
+  private val selectionBoundsX =
+    new SimpleDoubleProperty(0)
+
+  private val selectionBoundsY =
+    new SimpleDoubleProperty(0)
+
+  private val selectionBoundsWidth =
+    new SimpleDoubleProperty(0)
+
+  private val selectionBoundsHeight =
+    new SimpleDoubleProperty(0)
+
+
+  private def selectionBounds: Bounds =
+    new BoundingBox(
+      selectionBoundsX(),
+      selectionBoundsY(),
+      selectionBoundsWidth(),
+      selectionBoundsHeight()
+    )
+
+  private def selectionBounds_=(newValue: Bounds): Unit = {
+    selectionBoundsX() = newValue.minX
+    selectionBoundsY() = newValue.minY
+    selectionBoundsWidth() = newValue.width
+    selectionBoundsHeight() = newValue.height
   }
 
-  protected val selectionRectangle = new Rectangle {
-    styleClass.add("selectionRectangle")
-  }
+
+  protected val backgroundRectangle =
+    new Rectangle {
+      styleClass.add("backgroundRectangle")
+      x = 0
+      y = 0
+
+      width <==
+        graphCanvas.width
+
+      height <==
+        graphCanvas.height
+    }
+
+  protected val selectionRectangle =
+    new Rectangle {
+      styleClass.add("selectionRectangle")
+
+      x <==
+        selectionBoundsX
+
+      y <==
+        selectionBoundsY
+
+      width <==
+        selectionBoundsWidth
+
+      height <==
+        selectionBoundsHeight
+    }
 
 
   children.addAll(
@@ -73,22 +123,8 @@ G <: VisualGraph[V, L, G]
   )
 
 
-  override def setup(controller: GraphCanvasController[V, L, G], graph: G, vertexNodes: Map[UUID, VertexNode[V, L, G]], linkNodes: Map[UUID, LinkNode[V, L, G]]): Unit = {
-    this.controller = controller.asInstanceOf[BasicController[V, L, G]]
-    this.graph = graph
-    this.vertexNodes = vertexNodes.asInstanceOf[Map[UUID, BasicVertexNode[V, L, G]]]
-    this.linkNodes = linkNodes.asInstanceOf[Map[UUID, BasicLinkNode[V, L, G]]]
-  }
-
-
-  override def render() {
-    backgroundRectangle.width = graph.dimension.width
-    backgroundRectangle.height = graph.dimension.height
-
-    selectionRectangle.x = graph.selectionBounds.minX
-    selectionRectangle.y = graph.selectionBounds.minY
-    selectionRectangle.width = graph.selectionBounds.width
-    selectionRectangle.height = graph.selectionBounds.height
+  override def render(): Unit = {
+    //Just do nothing
   }
 
 
@@ -96,15 +132,15 @@ G <: VisualGraph[V, L, G]
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
         case MouseButton.Primary =>
-          dragAnchor = mouseEvent.point
-          notifyGraphChanged(
+          dragAnchor =
+            mouseEvent.point
+
+          graph =
             graph.deselectAll
-          )
 
         case MouseButton.Secondary =>
-          notifyGraphChanged(
+          graph =
             graph.deselectAll
-          )
 
         case _ =>
       }
@@ -118,11 +154,16 @@ G <: VisualGraph[V, L, G]
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
         case MouseButton.Primary =>
-          controller.dragSelectionBounds(graph, dragAnchor, mouseEvent.point)
-            .foreach(newGraph =>
-              notifyGraphChanged(newGraph)
-            )
+          if (controller.canDrawSelectionRectangle) {
+            val currentPoint =
+              mouseEvent.point
 
+            val clippedPoint =
+              currentPoint.clip(graphCanvas.dimension)
+
+            selectionBounds =
+              new DiagonalBounds(dragAnchor, clippedPoint)
+          }
         case _ =>
       }
     }
@@ -133,36 +174,37 @@ G <: VisualGraph[V, L, G]
     (mouseEvent: MouseEvent) => {
       mouseEvent.button match {
         case MouseButton.Primary =>
-          if (graph.selectionBounds.width < BasicBackgroundNode.SelectionRectangleMinSize
-            && graph.selectionBounds.height < BasicBackgroundNode.SelectionRectangleMinSize) {
+          if (selectionBounds.width < BasicBackgroundNode.SelectionRectangleMinSize
+            && selectionBounds.height < BasicBackgroundNode.SelectionRectangleMinSize) {
             controller.createVertex(graph, mouseEvent.point)
-              .foreach(newGraph =>
-                notifyGraphChanged(
+              .foreach(newGraph => {
+                selectionBounds =
+                  BasicBackgroundNode.EmptySelectionBounds
+
+                graph =
                   newGraph
-                    .visualCopy(selectionBounds = BasicBackgroundNode.EmptySelectionBounds)
-                )
-              )
+              })
           } else {
-            val selectionVertexes = vertexNodes
+            val selectionVertexes = graphCanvas.vertexNodes
               .values
-              .filter(_.intersects(graph.selectionBounds))
+              .filter(_.intersects(selectionBounds))
               .map(_.vertex)
               .toSet
 
-            val selectionLinks = linkNodes
+            val selectionLinks = graphCanvas.linkNodes
               .values
-              .filter(_.intersects(graph.selectionBounds))
+              .filter(_.intersects(selectionBounds))
               .map(_.link)
               .toSet
 
+            selectionBounds =
+              BasicBackgroundNode.EmptySelectionBounds
 
-            notifyGraphChanged(
-              graph
-                .setSelection(selectionVertexes, selectionLinks)
-                .visualCopy(
-                  selectionBounds = BasicBackgroundNode.EmptySelectionBounds
-                )
-            )
+            graph =
+              graph.setSelection(
+                selectionVertexes,
+                selectionLinks
+              )
           }
 
         case _ =>

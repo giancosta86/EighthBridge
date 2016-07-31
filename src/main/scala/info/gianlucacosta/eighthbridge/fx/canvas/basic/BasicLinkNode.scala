@@ -26,11 +26,10 @@ import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
 import info.gianlucacosta.helios.fx.geometry.{DiagonalBounds, Segment}
-import info.gianlucacosta.helios.fx.styles.PseudoClasses
 
 import scala.collection.JavaConversions._
 import scalafx.Includes._
-import scalafx.geometry.{Point2D, VPos}
+import scalafx.geometry.{Dimension2D, Point2D, VPos}
 import scalafx.scene.Group
 import scalafx.scene.input.{MouseButton, MouseEvent}
 import scalafx.scene.shape._
@@ -47,28 +46,36 @@ class BasicLinkNode[
 V <: BasicVertex[V],
 L <: BasicLink[L],
 G <: VisualGraph[V, L, G]
-](val sourceVertexId: UUID, val targetVertexId: UUID) extends Group with LinkNode[V, L, G] {
+](val graphCanvas: GraphCanvas[V, L, G], val sourceVertexId: UUID, val targetVertexId: UUID)
+  extends Group
+    with LinkNode[V, L, G]
+    with BasicGraphCanvasNode[V, L, G] {
 
   protected class LinkSegment(indexOfNewInternalPoint: Int) extends Segment {
     styleClass.add("line")
 
-    strokeLineCap = StrokeLineCap.Round
+    strokeLineCap =
+      StrokeLineCap.Round
 
     handleEvent(MouseEvent.MousePressed) {
       (mouseEvent: MouseEvent) => {
         mouseEvent.button match {
           case MouseButton.Secondary =>
 
-            val internalPoint = mouseEvent.point
+            val internalPoint =
+              mouseEvent.point
 
             val newInternalPoints = {
-              val (precedingInternalPoints, followingInternalPoints) = link.internalPoints.splitAt(indexOfNewInternalPoint)
+              val (precedingInternalPoints, followingInternalPoints) =
+                link.internalPoints.splitAt(indexOfNewInternalPoint)
 
               precedingInternalPoints ++ (internalPoint :: followingInternalPoints)
             }
 
             controller.createLinkInternalPoint(graph, link, newInternalPoints, internalPoint)
-              .foreach(newGraph => notifyGraphChanged(newGraph))
+              .foreach(newGraph =>
+                graph = newGraph
+              )
 
             mouseEvent.consume()
 
@@ -92,28 +99,48 @@ G <: VisualGraph[V, L, G]
 
     children.addAll(leftSegment, rightSegment)
 
-    val angle = link.arrow.angle
-    val length = link.arrow.length
+    val angle =
+      link.arrow.angle
 
-    val startPoint = segment.startPoint
-    val stopPoint = segment.endPoint
+    val length =
+      link.arrow.length
 
-    val anchor = new Point2D(
-      startPoint.x + stopPoint.x - startPoint.x,
-      startPoint.y + stopPoint.y - startPoint.y
-    )
 
-    val gamma = Math.atan2(anchor.y - startPoint.y, anchor.x - startPoint.x)
-    val dPx = length * Math.cos(gamma - angle)
-    val dPy = length * Math.sin(gamma - angle)
+    val startPoint =
+      segment.startPoint
 
-    val epsilon = Math.PI - gamma - angle
-    val dQx = length * Math.cos(epsilon)
-    val dQy = length * Math.sin(epsilon)
+    val stopPoint =
+      segment.endPoint
+
+
+    val anchor =
+      new Point2D(
+        startPoint.x + stopPoint.x - startPoint.x,
+        startPoint.y + stopPoint.y - startPoint.y
+      )
+
+
+    val gamma =
+      Math.atan2(anchor.y - startPoint.y, anchor.x - startPoint.x)
+
+    val dPx =
+      length * Math.cos(gamma - angle)
+
+    val dPy =
+      length * Math.sin(gamma - angle)
+
+
+    val epsilon =
+      Math.PI - gamma - angle
+
+    val dQx =
+      length * Math.cos(epsilon)
+
+    val dQy =
+      length * Math.sin(epsilon)
 
 
     val (leftEndX, leftEndY, rightEndX, rightEndY) =
-
       if (anchor.y <= startPoint.y) {
         (
           anchor.x - dPx,
@@ -132,22 +159,39 @@ G <: VisualGraph[V, L, G]
           )
       }
 
-    leftSegment.startX = anchor.x
-    leftSegment.startY = anchor.y
-    leftSegment.endX = leftEndX
-    leftSegment.endY = leftEndY
 
-    rightSegment.startX = anchor.x
-    rightSegment.startY = anchor.y
-    rightSegment.endX = rightEndX
-    rightSegment.endY = rightEndY
+    leftSegment.startX =
+      anchor.x
+
+    leftSegment.startY =
+      anchor.y
+
+    leftSegment.endX =
+      leftEndX
+
+    leftSegment.endY =
+      leftEndY
+
+
+    rightSegment.startX =
+      anchor.x
+
+    rightSegment.startY =
+      anchor.y
+
+    rightSegment.endX =
+      rightEndX
+
+    rightSegment.endY =
+      rightEndY
   }
 
 
   protected class InternalPointHandle(initialCenter: Point2D) extends Ellipse {
     styleClass.add("internalPointHandle")
 
-    opacity <== when(hover) choose 1 otherwise 0
+    opacity <==
+      when(hover) choose 1 otherwise 0
 
     def center: Point2D = new Point2D(
       centerX.value,
@@ -155,17 +199,24 @@ G <: VisualGraph[V, L, G]
     )
 
     def center_=(newPoint: Point2D) = {
-      centerX = newPoint.x
-      centerY = newPoint.y
+      centerX =
+        newPoint.x
+
+      centerY =
+        newPoint.y
     }
 
 
     def render(): Unit = {
-      radiusX = link.handleRadius.x
-      radiusY = link.handleRadius.y
+      radiusX =
+        link.handleRadius.x
+
+      radiusY =
+        link.handleRadius.y
     }
 
-    center = initialCenter
+    center =
+      initialCenter
 
 
     handleEvent(MouseEvent.MousePressed) {
@@ -174,10 +225,14 @@ G <: VisualGraph[V, L, G]
           case MouseButton.Secondary =>
             mouseEvent.clickCount match {
               case 1 =>
-                val newInternalPoints = link.internalPoints.filter(internalPoint => internalPoint != center)
+                val newInternalPoints =
+                  link.internalPoints.filter(internalPoint => internalPoint != center)
 
                 controller.deleteLinkInternalPoint(graph, link, newInternalPoints, center)
-                  .foreach(newGraph => notifyGraphChanged(newGraph))
+                  .foreach(newGraph =>
+                    graph =
+                      newGraph
+                  )
 
                 mouseEvent.consume()
 
@@ -193,27 +248,34 @@ G <: VisualGraph[V, L, G]
       (mouseEvent: MouseEvent) => {
         mouseEvent.button match {
           case MouseButton.Primary =>
-            val mousePoint = mouseEvent.point
-            val delta = mousePoint - dragAnchor //The initial drag anchor is set by the link's click filter
+            val mousePoint =
+              mouseEvent.point
 
-            val newCenter = (center + delta).clip(graph.dimension)
+            val delta =
+              mousePoint - dragAnchor //The initial drag anchor is set by the link's click filter
 
-            val newInternalPoints = link.internalPoints.map(internalPoint =>
-              if (internalPoint == center) newCenter else internalPoint
-            )
+            val newCenter =
+              (center + delta).clip(graphCanvas.dimension)
+
+            val newInternalPoints =
+              link.internalPoints.map(internalPoint =>
+                if (internalPoint == center) newCenter else internalPoint
+              )
 
             if (controller.canDragLinkInternalPoint(graph, link, newInternalPoints, center, newCenter)) {
-              dragAnchor = mousePoint
+              dragAnchor =
+                mousePoint
 
-              val newLink = link.visualCopy(internalPoints = newInternalPoints)
+              val newLink =
+                link.visualCopy(internalPoints = newInternalPoints)
 
-              internalPointHandles = internalPointHandles - center + (newCenter -> this)
+              internalPointHandles =
+                internalPointHandles - center + (newCenter -> this)
 
               center = newCenter
 
-              notifyGraphChanged(
+              graph =
                 graph.replaceLink(newLink)
-              )
             }
 
             mouseEvent.consume()
@@ -227,13 +289,21 @@ G <: VisualGraph[V, L, G]
   protected class LinkLabelConnector extends Line {
     styleClass.add("labelConnector")
 
-    visible = false
+    visible =
+      false
 
     def render(labelCenter: Point2D, linkJoinPoint: Point2D): Unit = {
-      startX = labelCenter.x
-      startY = labelCenter.y
-      linkLabelConnector.endX = linkJoinPoint.x
-      linkLabelConnector.endY = linkJoinPoint.y
+      startX =
+        labelCenter.x
+
+      startY =
+        labelCenter.y
+
+      linkLabelConnector.endX =
+        linkJoinPoint.x
+
+      linkLabelConnector.endY =
+        linkJoinPoint.y
     }
   }
 
@@ -241,7 +311,8 @@ G <: VisualGraph[V, L, G]
   protected class LinkLabel extends Text {
     styleClass.add("label")
 
-    textOrigin = VPos.Top
+    textOrigin =
+      VPos.Top
 
     handleEvent(MouseEvent.MouseDragged) {
       (mouseEvent: MouseEvent) => {
@@ -249,16 +320,25 @@ G <: VisualGraph[V, L, G]
           case MouseButton.Primary =>
             mouseEvent.clickCount match {
               case 1 =>
-                val mousePoint = mouseEvent.point
-                val delta = mousePoint - dragAnchor //The initial dragAnchor is set by the link's click filter
+                val mousePoint =
+                  mouseEvent.point
 
-                val oldCenter = link.labelCenter.getOrElse(getDefaultLabelCenter)
-                val newCenter = (oldCenter + delta).clip(graph.dimension)
+                val delta =
+                  mousePoint - dragAnchor //The initial dragAnchor is set by the link's click filter
+
+                val oldCenter =
+                  link.labelCenter.getOrElse(getDefaultLabelCenter)
+
+                val newCenter =
+                  (oldCenter + delta).clip(graphCanvas.dimension)
 
                 controller.dragLinkLabel(graph, link, oldCenter, newCenter)
                   .foreach(newGraph => {
-                    dragAnchor = mousePoint
-                    notifyGraphChanged(newGraph)
+                    dragAnchor =
+                      mousePoint
+
+                    graph =
+                      newGraph
                   })
 
                 mouseEvent.consume()
@@ -270,49 +350,59 @@ G <: VisualGraph[V, L, G]
     }
 
     def render(labelCenter: Point2D): Unit = {
-      text = link.text
+      text =
+        link.text
 
-      val textBounds = label.boundsInLocal.value
+      val textBounds =
+        label.boundsInLocal.value
 
-      x = labelCenter.x - textBounds.width / 2
-      y = labelCenter.y - textBounds.height / 2
+      x =
+        labelCenter.x - textBounds.width / 2
+
+      y =
+        labelCenter.y - textBounds.height / 2
     }
   }
 
-
-  private var controller: BasicController[V, L, G] = _
-  private var graph: G = _
-  private var _link: L = _
-
-
-  override def link: L = _link
-
-  private def link_=(newLink: L): Unit = {
-    _link = newLink
-  }
-
-
   private var dragAnchor: Point2D = _
 
-  protected var segments: List[LinkSegment] = List()
-  protected var arrow: LinkArrow = _
-  protected var internalPointHandles: Map[Point2D, InternalPointHandle] = Map()
+  protected var segments: List[LinkSegment] =
+    List()
 
-  protected val linkLabelConnector = new LinkLabelConnector
+  protected var arrow: LinkArrow = _
+
+  protected var internalPointHandles: Map[Point2D, InternalPointHandle] =
+    Map()
+
+
+  protected val linkLabelConnector =
+    new LinkLabelConnector
+
   children.add(linkLabelConnector)
 
-  protected var label: LinkLabel = new LinkLabel
+
+  protected var label: LinkLabel =
+    new LinkLabel
+
   children.add(label)
 
 
-  override def setup(controller: GraphCanvasController[V, L, G], graph: G, link: L): Unit = {
-    this.controller = controller.asInstanceOf[BasicController[V, L, G]]
-    this.graph = graph
-    this.link = link
-  }
+  opacity <==
+    when(hover) choose 0.75 otherwise 1
 
 
-  opacity <== when(hover) choose 0.75 otherwise 1
+  val targetVertexNode =
+    graphCanvas.vertexNodes(targetVertexId)
+
+
+  targetVertexNode.width.addListener((observable: javafx.beans.Observable) => {
+    render()
+  })
+
+
+  targetVertexNode.height.addListener((observable: javafx.beans.Observable) => {
+    render()
+  })
 
 
   handleEvent(MouseEvent.Any) {
@@ -363,21 +453,32 @@ G <: VisualGraph[V, L, G]
             case 1 =>
               if (mouseEvent.controlDown) {
                 controller.setLinkSelectedState(graph, link, !link.selected)
-                  .foreach(newGraph => notifyGraphChanged(newGraph))
+                  .foreach(newGraph =>
+                    graph =
+                      newGraph
+                  )
               } else if (!link.selected) {
                 controller.setSelection(graph, Set(), Set(link))
-                  .foreach(newGraph => notifyGraphChanged(newGraph))
+                  .foreach(newGraph =>
+                    graph =
+                      newGraph
+                  )
               }
 
 
             case 2 =>
-              val selectedLinks = graph.selectedLinks
+              val selectedLinks =
+                graph.selectedLinks
 
               if (selectedLinks.size == 1 && graph.selectedVertexes.isEmpty) {
-                val selectedLink = selectedLinks.head
+                val selectedLink =
+                  selectedLinks.head
 
                 controller.editLink(graph, selectedLink)
-                  .foreach(newGraph => notifyGraphChanged(newGraph))
+                  .foreach(newGraph =>
+                    graph =
+                      newGraph
+                  )
               }
 
 
@@ -391,25 +492,31 @@ G <: VisualGraph[V, L, G]
 
 
   private def getDefaultLabelCenter: Point2D = {
-    val sourceVertex = graph.getVertex(sourceVertexId).get
-    val targetVertex = graph.getVertex(targetVertexId).get
+    val sourceVertex =
+      graph.getVertex(sourceVertexId).get
 
-    new DiagonalBounds(sourceVertex.center, targetVertex.center).centerPoint2D
+    val targetVertex =
+      graph.getVertex(targetVertexId).get
+
+    new DiagonalBounds(
+      sourceVertex.center,
+      targetVertex.center
+    ).centerPoint2D
   }
 
 
   override def render(): Unit = {
-    styleClass.setAll("link")
-    styleClass.addAll(link.styleClasses)
+    super.render()
+
+    val sourceVertex =
+      graph.getVertex(sourceVertexId).get
+
+    val targetVertex =
+      graph.getVertex(targetVertexId).get
 
 
-    this.pseudoClassStateChanged(PseudoClasses.Selected, link.selected)
-
-
-    val sourceVertex = graph.getVertex(sourceVertexId).get
-    val targetVertex = graph.getVertex(targetVertexId).get
-
-    val defaultLabelCenter = getDefaultLabelCenter
+    val defaultLabelCenter =
+      getDefaultLabelCenter
 
     val labelCenter = link.labelCenter
       .getOrElse(defaultLabelCenter)
@@ -427,53 +534,66 @@ G <: VisualGraph[V, L, G]
     segments.foreach(children.remove(_))
 
     val targetAnchorPoint =
-      if (graph.renderDirected) {
+      if (controller.renderDirected) {
         val centersDelta =
           sourceVertex.center - targetVertex.center
+
+        val targetDimension =
+          new Dimension2D(
+            targetVertexNode.width(),
+            targetVertexNode.height()
+          )
 
 
         val intersectionWithTargetVerticalSide =
           if (centersDelta.x != 0)
-            math.atan(math.abs(centersDelta.y / centersDelta.x)) <= math.atan(math.abs(targetVertex.dimension.height / targetVertex.dimension.width))
+            math.atan(math.abs(centersDelta.y / centersDelta.x)) <= math.atan(math.abs(targetDimension.height / targetDimension.width))
           else
             false
 
         if (intersectionWithTargetVerticalSide)
           new Point2D(
-            targetVertex.center.x + math.signum(centersDelta.x) * targetVertex.dimension.width / 2,
+            targetVertex.center.x + math.signum(centersDelta.x) * targetDimension.width / 2,
 
-            targetVertex.center.y + targetVertex.dimension.width / 2 * centersDelta.y / math.abs(centersDelta.x)
+            targetVertex.center.y + targetDimension.width / 2 * centersDelta.y / math.abs(centersDelta.x)
           )
         else
           new Point2D(
-            targetVertex.center.x + targetVertex.dimension.height / 2 * centersDelta.x / math.abs(centersDelta.y),
+            targetVertex.center.x + targetDimension.height / 2 * centersDelta.x / math.abs(centersDelta.y),
 
-            targetVertex.center.y + math.signum(centersDelta.y) * targetVertex.dimension.height / 2
+            targetVertex.center.y + math.signum(centersDelta.y) * targetDimension.height / 2
           )
       } else
         targetVertex.center
 
-    val sourcePoints = sourceVertex.center :: link.internalPoints
-    val targetPoints = link.internalPoints ++ List(targetAnchorPoint)
+
+    val sourcePoints =
+      sourceVertex.center :: link.internalPoints
+
+    val targetPoints =
+      link.internalPoints ++ List(targetAnchorPoint)
 
 
     segments = (sourcePoints zip targetPoints).zipWithIndex.map { case ((sourcePoint, targetPoint), internalPointIndex) =>
-      val newSegment = new LinkSegment(internalPointIndex) {
-        startPoint = sourcePoint
-        endPoint = targetPoint
-      }
+      val newSegment =
+        new LinkSegment(internalPointIndex) {
+          startPoint = sourcePoint
+          endPoint = targetPoint
+        }
 
       children.add(1, newSegment) //Child 0 is the label connector
 
       newSegment
     }
 
-    if (graph.renderDirected) {
+
+    if (controller.renderDirected) {
       if (arrow != null) {
         children.remove(arrow)
       }
 
-      arrow = new LinkArrow(segments.last)
+      arrow =
+        new LinkArrow(segments.last)
 
       children.add(1 + segments.size, arrow)
     }
@@ -492,12 +612,13 @@ G <: VisualGraph[V, L, G]
 
 
     link.internalPoints.foreach(internalPoint => {
-      val handle = internalPointHandles.getOrElse(internalPoint, {
-        val newHandle = new InternalPointHandle(internalPoint)
-        internalPointHandles += (internalPoint -> newHandle)
-        children.add(newHandle)
-        newHandle
-      })
+      val handle =
+        internalPointHandles.getOrElse(internalPoint, {
+          val newHandle = new InternalPointHandle(internalPoint)
+          internalPointHandles += (internalPoint -> newHandle)
+          children.add(newHandle)
+          newHandle
+        })
 
       handle.render()
     })

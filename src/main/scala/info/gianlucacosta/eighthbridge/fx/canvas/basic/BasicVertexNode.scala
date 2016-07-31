@@ -22,17 +22,95 @@ package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
 import info.gianlucacosta.eighthbridge.fx.canvas._
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
-import info.gianlucacosta.helios.fx.geometry.extensions.GeometryExtensions._
-import info.gianlucacosta.helios.fx.styles.PseudoClasses
 
 import scala.collection.JavaConversions._
 import scalafx.Includes._
-import scalafx.geometry.{Point2D, Pos}
-import scalafx.scene.Group
+import scalafx.beans.property.ReadOnlyDoubleProperty
+import scalafx.geometry.Dimension2D
 import scalafx.scene.control.Label
-import scalafx.scene.input.{MouseButton, MouseEvent}
+import scalafx.scene.layout.VBox
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.text.TextAlignment
+import scalafx.scene.{Group, Scene}
+
+
+object BasicVertexNode {
+  val DefaultPadding: Double =
+    10
+
+  /**
+    * Case class whose instances can be passed to <i>getDimensions()</i>
+    *
+    * @param text         The vertex text
+    * @param padding      The vertex padding
+    * @param styleClasses The CSS classes that should be applied to the vertex (in addition to the "vertex" predefined one)
+    */
+  case class DimensionQuery(
+                             text: String,
+                             padding: Double = DefaultPadding,
+                             styleClasses: List[String] = List()
+                           )
+
+
+  /**
+    * Given a list of stylesheets and a list of query objects,
+    * returns the list of Dimension2D for BasicVertexNode objects,
+    * instantiated in a dedicated invisible scene
+    *
+    * @param sceneStylesheets
+    * @param queries
+    * @return The list of dimensions, in the same order as the input queries
+    */
+  def getDimensions(sceneStylesheets: List[String], queries: List[DimensionQuery]): List[Dimension2D] = {
+    val layoutBox =
+      new VBox
+
+    val scene =
+      new Scene(layoutBox) {
+        stylesheets.setAll(sceneStylesheets: _*)
+      }
+
+
+    val labels =
+      queries.map(query =>
+        new Label {
+          text = query.text
+        }
+      )
+
+
+    val groupNodes =
+      labels.zip(queries).map {
+        case (label, query) =>
+          new Group {
+            children.add(label)
+
+            styleClass.setAll("vertex")
+            styleClass.addAll(query.styleClasses)
+          }
+            .delegate
+      }
+
+    layoutBox.children.setAll(groupNodes: _*)
+
+    layoutBox.applyCss()
+
+    labels.zip(queries).map {
+      case (label, query) =>
+        val padding =
+          query.padding
+
+        new Dimension2D(
+          label.delegate.prefWidth(-1)
+            + 2 * padding,
+
+          label.delegate.prefHeight(-1)
+            + 2 * padding
+        )
+    }
+  }
+}
+
 
 /**
   * Default, interactive implementation of VertexNode
@@ -41,141 +119,63 @@ class BasicVertexNode[
 V <: BasicVertex[V],
 L <: BasicLink[L],
 G <: VisualGraph[V, L, G]
-] extends Group with VertexNode[V, L, G] {
-  private var controller: BasicController[V, L, G] = _
-  private var graph: G = _
-  private var _vertex: V = _
+](
+   val graphCanvas: GraphCanvas[V, L, G],
+   padding: Double = BasicVertexNode.DefaultPadding
+ )
+  extends Group
+    with BasicVertexNodeMixin[V, L, G] {
+  protected val label = new Label {
+    styleClass.add("label")
 
-  override def vertex: V = _vertex
+    textAlignment =
+      TextAlignment.Center
 
-  private def vertex_=(newVertex: V): Unit = {
-    this._vertex = newVertex
+
+    layoutX <==
+      centerX - width / 2
+
+
+    layoutY <==
+      centerY - height / 2
   }
-
-  private var dragAnchor: Point2D = _
 
   protected val body = new Rectangle {
     styleClass.add("body")
+
+    width <==
+      label.width + 2 * padding
+
+
+    height <==
+      label.height + 2 * padding
+
+
+    layoutX <==
+      label.layoutX - padding
+
+
+    layoutY <==
+      label.layoutY - padding
   }
 
-  protected val label = new Label {
-    styleClass.add("label")
-    alignment = Pos.Center
-    textAlignment = TextAlignment.Center
-  }
 
   children.addAll(body, label)
 
 
-  override def setup(controller: GraphCanvasController[V, L, G], graph: G, vertex: V): Unit = {
-    this.controller = controller.asInstanceOf[BasicController[V, L, G]]
-    this.graph = graph
-    this.vertex = vertex
-  }
-
-
   override def render(): Unit = {
-    styleClass.setAll("vertex")
-    styleClass.addAll(vertex.styleClasses)
+    super.render()
 
-
-    this.pseudoClassStateChanged(
-      PseudoClasses.Selected,
-      vertex.selected
-    )
-
-    val dimension = vertex.dimension
-
-    val width = dimension.width
-    val height = dimension.height
-
-    body.width = width
-    body.height = height
-    body.layoutX = vertex.center.x - width / 2
-    body.layoutY = vertex.center.y - height / 2
-
-
-    label.text = vertex.text
-
-    label.setPrefSize(width, height)
-    label.layoutX = body.layoutX()
-    label.layoutY = body.layoutY()
+    label.text =
+      vertex.text
   }
 
 
-  handleEvent(MouseEvent.Any) {
-    (mouseEvent: MouseEvent) => {
-      mouseEvent.consume()
-    }
-  }
+  override def width: ReadOnlyDoubleProperty =
+    body.width
 
 
-  handleEvent(MouseEvent.MousePressed) {
-    (mouseEvent: MouseEvent) => {
-      mouseEvent.button match {
-        case MouseButton.Primary =>
-          mouseEvent.clickCount match {
-            case 1 =>
-              dragAnchor = mouseEvent.point
-              if (mouseEvent.controlDown) {
-                controller.setVertexSelectedState(graph, vertex, !vertex.selected)
-                  .foreach(newGraph => notifyGraphChanged(newGraph))
-              } else if (!vertex.selected) {
-                controller.setSelection(graph, Set(vertex), Set())
-                  .foreach(newGraph => notifyGraphChanged(newGraph))
-              }
-
-            case 2 =>
-              val selectedVertexes = graph.selectedVertexes
-
-              if (selectedVertexes.size == 1 && graph.selectedLinks.isEmpty) {
-                val selectedVertex = selectedVertexes.head
-
-                controller.editVertex(graph, selectedVertex)
-                  .foreach(newGraph => notifyGraphChanged(newGraph))
-              }
-
-
-            case _ =>
-          }
-
-        case MouseButton.Secondary =>
-          mouseEvent.clickCount match {
-            case 1 =>
-              if (graph.selectedVertexes.size == 1 && !graph.selectedVertexes.contains(vertex) && graph.selectedLinks.isEmpty) {
-                val selectedVertex = graph.selectedVertexes.head
-
-                controller.createLink(graph, selectedVertex, vertex)
-                  .foreach(newGraph => notifyGraphChanged(newGraph))
-              }
-
-            case _ =>
-          }
-
-        case _ =>
-      }
-      ()
-    }
-  }
-
-
-  handleEvent(MouseEvent.MouseDragged) {
-    (mouseEvent: MouseEvent) => {
-      mouseEvent.button match {
-        case MouseButton.Primary =>
-          val mousePoint = mouseEvent.point
-          val delta = mousePoint - dragAnchor
-
-
-          if (vertex.selected) {
-            controller.dragSelection(graph, delta)
-              .foreach(newGraph => {
-                dragAnchor = mousePoint
-                notifyGraphChanged(newGraph)
-              })
-          }
-        case _ =>
-      }
-    }
-  }
+  override def height: ReadOnlyDoubleProperty =
+    body.height
 }
+

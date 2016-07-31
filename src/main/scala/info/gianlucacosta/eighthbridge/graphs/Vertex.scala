@@ -23,4 +23,4 @@ package info.gianlucacosta.eighthbridge.graphs
 /**
   * A vertex
   */
-trait Vertex extends GraphComponent
+trait Vertex extends GraphElement

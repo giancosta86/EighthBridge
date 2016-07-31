@@ -20,6 +20,7 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
+import info.gianlucacosta.eighthbridge.fx.canvas.GraphCanvas
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 
 import scalafx.geometry.Point2D
@@ -27,7 +28,8 @@ import scalafx.geometry.Point2D
 /**
   * Interactive controller only supporting selection of vertexes/links, as well as drag & drop
   */
-class DragDropController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
+class DragDropController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]](val renderDirected: Boolean) extends BasicController[V, L, G] {
+
   override def createVertex(graph: G, center: Point2D): Option[G] =
     None
 
@@ -56,6 +58,7 @@ class DragDropController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGrap
       )
     )
 
+
   override def editVertex(graph: G, vertex: V): Option[G] =
     None
 
@@ -64,22 +67,25 @@ class DragDropController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGrap
     None
 
 
-  override def dragSelection(graph: G, delta: Point2D): Option[G] =
-    Some(
-      graph.moveSelectedVertexesBy(delta)
-    )
+  override def canDrawSelectionRectangle: Boolean =
+    true
 
-  override def deleteSelection(graph: G): Option[G] =
+
+  override def deleteSelection(graphCanvas: GraphCanvas[V, L, G], graph: G): Option[G] =
     None
+
 
   override def createLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] =
     None
 
+
   override def deleteLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] =
     None
 
+
   override def canDragLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], oldInternalPoint: Point2D, newInternalPoint: Point2D): Boolean =
     true
+
 
   override def dragLinkLabel(graph: G, link: L, oldCenter: Point2D, newCenter: Point2D): Option[G] = {
     val newLink = link.visualCopy(

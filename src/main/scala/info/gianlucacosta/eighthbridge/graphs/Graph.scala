@@ -53,20 +53,28 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
 
   @transient
   private lazy val vertexMap =
-    vertexes.map(vertex => vertex.id -> vertex)
+    vertexes.map(vertex =>
+      vertex.id -> vertex
+    )
       .toMap
+
 
   @transient
   private lazy val linkMap =
-    links.map(link => link.id -> link)
+    links.map(
+      link => link.id -> link
+    )
       .toMap
 
 
   def addVertexes(vertexesToAdd: Set[V]): G = {
-    val newVertexes = vertexes ++ vertexesToAdd
+    val newVertexes =
+      vertexes ++ vertexesToAdd
 
-    require(newVertexes.size == vertexes.size + vertexesToAdd.size,
-      "The vertexes to add must not belong to the graph")
+    require(
+      newVertexes.size == vertexes.size + vertexesToAdd.size,
+      "The vertexes to add must not belong to the graph"
+    )
 
     graphCopy(vertexes = newVertexes)
   }
@@ -77,7 +85,8 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
 
 
   def replaceVertexes(replacingVertexes: Set[V]): G = {
-    val newVertexes = vertexes.diff(replacingVertexes) ++ replacingVertexes
+    val newVertexes =
+      vertexes.diff(replacingVertexes) ++ replacingVertexes
 
     require(
       newVertexes.size == vertexes.size,
@@ -93,14 +102,16 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
 
 
   def removeVertexes(vertexesToRemove: Set[V]): G = {
-    val newVertexes = vertexes.diff(vertexesToRemove)
+    val newVertexes =
+      vertexes.diff(vertexesToRemove)
 
     require(
       newVertexes.size == vertexes.size - vertexesToRemove.size,
       "All the vertexes to remove must belong to the graph"
     )
 
-    val vertexIdsToRemove = vertexesToRemove.map(_.id)
+    val vertexIdsToRemove =
+      vertexesToRemove.map(_.id)
 
 
     val (newBindings, bindingsToRemove) = bindings.partition(
@@ -108,11 +119,20 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
     )
 
 
-    val linkIdsToRemove = bindingsToRemove.map(_.linkId)
-    val newLinks = links.filter(link => !linkIdsToRemove.contains(link.id))
+    val linkIdsToRemove =
+      bindingsToRemove.map(_.linkId)
+
+    val newLinks =
+      links.filter(link =>
+        !linkIdsToRemove.contains(link.id)
+      )
 
 
-    graphCopy(vertexes = newVertexes, links = newLinks, bindings = newBindings)
+    graphCopy(
+      vertexes = newVertexes,
+      links = newLinks,
+      bindings = newBindings
+    )
   }
 
 
@@ -123,42 +143,65 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
   def addLinks(bindingMapToAdd: Map[L, B]): G = {
     bindingMapToAdd.foreach {
       case (link, binding) =>
-        require(link.id == binding.linkId, "Each binding must reference its associated link")
+        require(
+          link.id == binding.linkId,
+          "Each binding must reference its associated link"
+        )
     }
 
-    val linksToAdd = bindingMapToAdd.keySet
-    val bindingsToAdd = bindingMapToAdd.values.toSet
+    val linksToAdd =
+      bindingMapToAdd.keySet
 
-    require(linksToAdd.size == bindingsToAdd.size, "The bindings must be distinct")
+    val bindingsToAdd =
+      bindingMapToAdd.values.toSet
+
+    require(
+      linksToAdd.size == bindingsToAdd.size,
+      "The bindings must be distinct"
+    )
 
     bindingsToAdd.foreach(binding => {
       binding.vertexIds.foreach(vertexId =>
-        require(vertexMap.contains(vertexId), "Each binding's vertexes must belong to the graph")
+        require(
+          vertexMap.contains(vertexId),
+          "Each binding's vertexes must belong to the graph"
+        )
       )
     })
 
 
-    val newLinks = links.union(linksToAdd)
-    val newBindings = bindings.union(bindingsToAdd)
+    val newLinks =
+      links.union(linksToAdd)
 
-    require(newLinks.size == links.size + linksToAdd.size,
+    val newBindings =
+      bindings.union(bindingsToAdd)
+
+    require(
+      newLinks.size == links.size + linksToAdd.size,
       "The links to add must not belong to the graph"
     )
 
-    require(newBindings.size == bindings.size + bindingsToAdd.size,
+    require(
+      newBindings.size == bindings.size + bindingsToAdd.size,
       "The bindings to add must not belong to the graph"
     )
 
-    graphCopy(links = newLinks, bindings = newBindings)
+    graphCopy(
+      links = newLinks,
+      bindings = newBindings
+    )
   }
 
 
   def addLink(linkToAdd: L, bindingToAdd: B) =
-    addLinks(Map(linkToAdd -> bindingToAdd))
+    addLinks(
+      Map(linkToAdd -> bindingToAdd)
+    )
 
 
   def replaceLinks(replacingLinks: Set[L]): G = {
-    val newLinks = links.diff(replacingLinks) ++ replacingLinks
+    val newLinks =
+      links.diff(replacingLinks) ++ replacingLinks
 
     require(
       newLinks.size == links.size,
@@ -174,20 +217,25 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
 
 
   def removeLinks(linksToRemove: Set[L]): G = {
-    val newLinks = links.diff(linksToRemove)
+    val newLinks =
+      links.diff(linksToRemove)
 
     require(
       newLinks.size == links.size - linksToRemove.size,
       "All the links to remove must belong to the graph"
     )
 
-    val linkIdsToRemove = linksToRemove.map(_.id)
+    val linkIdsToRemove =
+      linksToRemove.map(_.id)
 
     val newBindings = bindings.filter(binding =>
       !linkIdsToRemove.contains(binding.linkId)
     )
 
-    graphCopy(links = newLinks, bindings = newBindings)
+    graphCopy(
+      links = newLinks,
+      bindings = newBindings
+    )
   }
 
 
@@ -215,7 +263,9 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
   lazy val linkedVertexes: Set[V] =
     bindings
       .flatMap(binding =>
-        binding.vertexIds.map(vertexId => getVertex(vertexId).get)
+        binding.vertexIds.map(vertexId =>
+          getVertex(vertexId).get
+        )
       )
 
   @transient
@@ -230,13 +280,16 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
     * @return A set of links connecting the vertexes
     */
   def getLinksBetween(linkVertexes: Set[V]): Set[L] = {
-    val linkVertexIds = linkVertexes.map(_.id)
+    val linkVertexIds =
+      linkVertexes.map(_.id)
 
     bindings
       .filter(binding =>
         linkVertexIds.subsetOf(binding.vertexIds)
       )
-      .map(binding => getLink(binding.linkId).get)
+      .map(binding =>
+        getLink(binding.linkId).get
+      )
   }
 
 
@@ -250,7 +303,7 @@ trait Graph[V <: Vertex, L <: Link, B <: Binding, G <: Graph[V, L, B, G]] {
     * @param vertex A vertex in the graph
     * @return The set of all the vertexes connected to the given vertex
     */
-  def linkedVertexes(vertex: V): Set[V] =
+  def getLinkedVertexes(vertex: V): Set[V] =
     bindings
       .filter(binding => binding.vertexIds.contains(vertex.id))
       .flatMap(binding => binding.vertexIds - vertex.id)

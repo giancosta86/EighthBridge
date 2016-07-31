@@ -22,33 +22,17 @@ package info.gianlucacosta.eighthbridge.graphs.point2point.visual
 
 import info.gianlucacosta.eighthbridge.graphs.point2point.ArcBinding
 
-import scalafx.geometry.{BoundingBox, Bounds, Dimension2D}
-
 /**
   * Default VisualGraph implementation
   *
-  * @param renderDirected
-  * @param dimension
-  * @param selectionBounds
   * @param vertexes
   * @param links
   * @param bindings
   */
 case class DefaultVisualGraph[V <: VisualVertex[V], L <: VisualLink[L]](
-                                                                         renderDirected: Boolean,
-                                                                         dimension: Dimension2D,
-                                                                         selectionBounds: Bounds = new BoundingBox(0, 0, 0, 0),
-
                                                                          vertexes: Set[V] = Set[V](),
                                                                          links: Set[L] = Set[L](),
                                                                          bindings: Set[ArcBinding] = Set[ArcBinding]()) extends VisualGraph[V, L, DefaultVisualGraph[V, L]] {
-
-  override def visualCopy(renderDirected: Boolean, dimension: Dimension2D, selectionBounds: Bounds): DefaultVisualGraph[V, L] =
-    copy(
-      renderDirected = renderDirected,
-      dimension = dimension,
-      selectionBounds = selectionBounds
-    )
 
   override def graphCopy(vertexes: Set[V], links: Set[L], bindings: Set[ArcBinding]): DefaultVisualGraph[V, L] =
     copy(

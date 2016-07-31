@@ -18,15 +18,28 @@
   ===========================================================================
 */
 
-package info.gianlucacosta.eighthbridge.fx
+package info.gianlucacosta.eighthbridge.graphs
 
-import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
+import java.util.UUID
 
-package object canvas {
-  type VisualGraphChangedListener[
-  V <: VisualVertex[V],
-  L <: VisualLink[L],
-  G <: VisualGraph[V, L, G]
-  ] =
-  (G => Unit)
+/**
+  * Generic graph element (vertex, link, binding) - identified by its UUID
+  */
+trait GraphElement {
+  /**
+    * The unique identification value
+    */
+  val id: UUID
+
+  override final def equals(obj: Any): Boolean =
+    obj match {
+      case other: GraphElement =>
+        id == other.id
+
+      case _ =>
+        false
+    }
+
+  override final def hashCode(): Int =
+    id.hashCode()
 }

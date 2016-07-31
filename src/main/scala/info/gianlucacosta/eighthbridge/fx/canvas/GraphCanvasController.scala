@@ -22,19 +22,26 @@ package info.gianlucacosta.eighthbridge.fx.canvas
 
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.{VisualGraph, VisualLink, VisualVertex}
 
+import scalafx.geometry.Dimension2D
+
+
 /**
-  * Controller telling GraphCanvas how to create JavaFX nodes for GraphComponents and how to handle node deletion
+  * Controller providing behavior for GraphCanvas
   */
 trait GraphCanvasController[
 V <: VisualVertex[V],
 L <: VisualLink[L],
 G <: VisualGraph[V, L, G]
 ] {
-  def createBackgroundNode(): BackgroundNode[V, L, G]
+  def createBackgroundNode(graphCanvas: GraphCanvas[V, L, G]): BackgroundNode[V, L, G]
 
-  def createVertexNode(vertex: V): VertexNode[V, L, G]
+  def createVertexNode(graphCanvas: GraphCanvas[V, L, G], vertex: V): VertexNode[V, L, G]
 
-  def createLinkNode(sourceVertex: V, targetVertex: V, link: L): LinkNode[V, L, G]
+  def createLinkNode(graphCanvas: GraphCanvas[V, L, G], sourceVertex: V, targetVertex: V, link: L): LinkNode[V, L, G]
 
-  def deleteSelection(graph: G): Option[G]
+  def deleteSelection(graphCanvas: GraphCanvas[V, L, G], graph: G): Option[G]
+
+  def getCanvasDimension(graphCanvas: GraphCanvas[V, L, G]): Dimension2D
+
+  def renderDirected: Boolean
 }

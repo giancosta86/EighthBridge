@@ -20,6 +20,7 @@
 
 package info.gianlucacosta.eighthbridge.fx.canvas.basic
 
+import info.gianlucacosta.eighthbridge.fx.canvas.GraphCanvas
 import info.gianlucacosta.eighthbridge.graphs.point2point.visual.VisualGraph
 
 import scalafx.geometry.Point2D
@@ -27,9 +28,9 @@ import scalafx.geometry.Point2D
 /**
   * Controller only showing a graph - totally preventing interactivity
   */
-class ReadOnlyController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]] extends BasicController[V, L, G] {
-  override def dragSelectionBounds(graph: G, dragAnchor: Point2D, currentPoint: Point2D): Option[G] =
-    None
+class ReadOnlyController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGraph[V, L, G]](val renderDirected: Boolean) extends BasicController[V, L, G] {
+  override def canDrawSelectionRectangle: Boolean =
+    false
 
   override def createVertex(graph: G, center: Point2D): Option[G] =
     None
@@ -52,10 +53,10 @@ class ReadOnlyController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGrap
   override def setVertexSelectedState(graph: G, vertex: V, selected: Boolean): Option[G] =
     None
 
-  override def deleteSelection(graph: G): Option[G] =
+  override def deleteSelection(graphCanvas: GraphCanvas[V, L, G], graph: G): Option[G] =
     None
 
-  override def dragSelection(graph: G, delta: Point2D): Option[G] =
+  override def dragSelection(graphCanvas: GraphCanvas[V, L, G], delta: Point2D): Option[G] =
     None
 
   override def createLinkInternalPoint(graph: G, link: L, newInternalPoints: List[Point2D], internalPoint: Point2D): Option[G] =
@@ -69,4 +70,6 @@ class ReadOnlyController[V <: BasicVertex[V], L <: BasicLink[L], G <: VisualGrap
 
   override def dragLinkLabel(graph: G, link: L, oldCenter: Point2D, newCenter: Point2D): Option[G] =
     None
+
+
 }

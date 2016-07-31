@@ -25,7 +25,7 @@ import java.util.UUID
 /**
   * Generic binding - that is, a connection between a link and any number of vertexes
   */
-trait Binding extends GraphComponent {
+trait Binding extends GraphElement {
   /**
     * The set of ids of the attached vertexes
     */
