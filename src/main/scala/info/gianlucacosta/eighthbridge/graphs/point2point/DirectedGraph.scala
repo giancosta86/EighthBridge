@@ -216,16 +216,16 @@ trait DirectedGraph[V <: Vertex, L <: Link, G <: DirectedGraph[V, L, G]] extends
 
 
   @tailrec
-  private def fold[T](
-                       cumulatedValue: T,
-                       vertexProcessor: VertexFoldProcessor[T],
-                       enteringArcsMap: Map[V, Set[L]],
-                       exitingArcsMap: Map[V, Set[L]],
-                       exitingVertexesMap: Map[V, Set[V]],
-                       expandedVertexes: Set[V],
-                       exploredArcs: Set[L],
-                       fringe: List[V]
-                     ): T = {
+  protected[point2point] final def fold[T](
+                                            cumulatedValue: T,
+                                            vertexProcessor: VertexFoldProcessor[T],
+                                            enteringArcsMap: Map[V, Set[L]],
+                                            exitingArcsMap: Map[V, Set[L]],
+                                            exitingVertexesMap: Map[V, Set[V]],
+                                            expandedVertexes: Set[V],
+                                            exploredArcs: Set[L],
+                                            fringe: List[V]
+                                          ): T = {
     fringe match {
       case currentVertex :: fringeTail =>
         val currentEnteringArcs =

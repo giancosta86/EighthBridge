@@ -54,7 +54,7 @@ EighthBridge is designed to be simple and minimalist; however, we could now go t
 
 * **GraphElement**: the trait shared by vertexes, links and bindings - it provides a unique UUID to identify each element
 
-* **DirectedGraph**: trait providing utility functions for graphs based on **ArcBinding**
+* **DirectedGraph**: trait providing utility functions for graphs based on **ArcBinding**. If you massively employ topological functions such as *getEnteringArcs()* or *fold()*, please consider inheriting from its **TopologyCacheDirectedGraph** subtrait.
 
 * **VisualGraph**: the most important *DirectedGraph* subtrait, which is widely employed both in the rendering subsystem and in other projects - such as [GraphsJ](https://github.com/giancosta86/GraphsJ): its vertexes and links inherit from **VisualVertex** and **VisualLink**. Bindings for a visual graph are always **ArcBinding**'s - because when you draw a graph you implicitly work with arcs; however, it can easily be interpreted as an undirected graph, as shown in [Prim's Shortest Spanning Tree implementation](https://github.com/giancosta86/GraphsJ-scenarios).
 
