@@ -97,7 +97,10 @@ G <: VisualGraph[V, L, G]
       styleClass.add("line")
     }
 
-    children.addAll(leftSegment, rightSegment)
+    children.addAll(
+      leftSegment,
+      rightSegment
+    )
 
     val angle =
       link.arrow.angle
@@ -110,18 +113,14 @@ G <: VisualGraph[V, L, G]
       segment.startPoint
 
     val stopPoint =
-      segment.endPoint
-
-
-    val anchor =
-      new Point2D(
-        startPoint.x + stopPoint.x - startPoint.x,
-        startPoint.y + stopPoint.y - startPoint.y
-      )
+      targetAnchorPoint
 
 
     val gamma =
-      Math.atan2(anchor.y - startPoint.y, anchor.x - startPoint.x)
+      Math.atan2(
+        stopPoint.y - startPoint.y,
+        stopPoint.x - startPoint.x
+      )
 
     val dPx =
       length * Math.cos(gamma - angle)
@@ -141,30 +140,30 @@ G <: VisualGraph[V, L, G]
 
 
     val (leftEndX, leftEndY, rightEndX, rightEndY) =
-      if (anchor.y <= startPoint.y) {
+      if (stopPoint.y <= startPoint.y) {
         (
-          anchor.x - dPx,
-          anchor.y - dPy,
+          stopPoint.x - dPx,
+          stopPoint.y - dPy,
 
-          anchor.x + dQx,
-          anchor.y - dQy
+          stopPoint.x + dQx,
+          stopPoint.y - dQy
           )
       } else {
         (
-          anchor.x + dQx,
-          anchor.y - dQy,
+          stopPoint.x + dQx,
+          stopPoint.y - dQy,
 
-          anchor.x - dPx,
-          anchor.y - dPy
+          stopPoint.x - dPx,
+          stopPoint.y - dPy
           )
       }
 
 
     leftSegment.startX =
-      anchor.x
+      stopPoint.x
 
     leftSegment.startY =
-      anchor.y
+      stopPoint.y
 
     leftSegment.endX =
       leftEndX
@@ -174,10 +173,10 @@ G <: VisualGraph[V, L, G]
 
 
     rightSegment.startX =
-      anchor.x
+      stopPoint.x
 
     rightSegment.startY =
-      anchor.y
+      stopPoint.y
 
     rightSegment.endX =
       rightEndX
@@ -391,6 +390,10 @@ G <: VisualGraph[V, L, G]
     when(hover) choose 0.75 otherwise 1
 
 
+  val sourceVertexNode =
+    graphCanvas.vertexNodes(sourceVertexId)
+
+
   val targetVertexNode =
     graphCanvas.vertexNodes(targetVertexId)
 
@@ -490,17 +493,16 @@ G <: VisualGraph[V, L, G]
     }
   }
 
+  private var sourceAnchorPoint: Point2D = _
+  private var targetAnchorPoint: Point2D = _
 
   private def getDefaultLabelCenter: Point2D = {
     val sourceVertex =
       graph.getVertex(sourceVertexId).get
 
-    val targetVertex =
-      graph.getVertex(targetVertexId).get
-
     new DiagonalBounds(
-      sourceVertex.center,
-      targetVertex.center
+      sourceAnchorPoint,
+      targetAnchorPoint
     ).centerPoint2D
   }
 
@@ -515,8 +517,74 @@ G <: VisualGraph[V, L, G]
       graph.getVertex(targetVertexId).get
 
 
+    sourceAnchorPoint =
+      link.internalPoints.lastOption.getOrElse(
+        {
+          val centersDelta =
+            sourceVertex.center - targetVertex.center
+
+          val sourceDimension =
+            new Dimension2D(
+              sourceVertexNode.width(),
+              sourceVertexNode.height()
+            )
+
+
+          val intersectionWithSourceVerticalSide =
+            if (centersDelta.x != 0)
+              math.atan(math.abs(centersDelta.y / centersDelta.x)) <= math.atan(math.abs(sourceDimension.height / sourceDimension.width))
+            else
+              false
+
+          if (intersectionWithSourceVerticalSide)
+            new Point2D(
+              sourceVertex.center.x + math.signum(centersDelta.x) * sourceDimension.width / 2,
+
+              sourceVertex.center.y + sourceDimension.width / 2 * centersDelta.y / math.abs(centersDelta.x)
+            )
+          else
+            new Point2D(
+              sourceVertex.center.x + sourceDimension.height / 2 * centersDelta.x / math.abs(centersDelta.y),
+
+              sourceVertex.center.y - math.signum(centersDelta.y) * sourceDimension.height / 2
+            )
+        })
+
+    targetAnchorPoint = {
+      val pointsDelta =
+        sourceAnchorPoint - targetVertex.center
+
+      val targetDimension =
+        new Dimension2D(
+          targetVertexNode.width(),
+          targetVertexNode.height()
+        )
+
+
+      val intersectionWithTargetVerticalSide =
+        if (pointsDelta.x != 0)
+          math.atan(math.abs(pointsDelta.y / pointsDelta.x)) <= math.atan(math.abs(targetDimension.height / targetDimension.width))
+        else
+          false
+
+      if (intersectionWithTargetVerticalSide)
+        new Point2D(
+          targetVertex.center.x + math.signum(pointsDelta.x) * targetDimension.width / 2,
+
+          targetVertex.center.y + targetDimension.width / 2 * pointsDelta.y / math.abs(pointsDelta.x)
+        )
+      else
+        new Point2D(
+          targetVertex.center.x + targetDimension.height / 2 * pointsDelta.x / math.abs(pointsDelta.y),
+
+          targetVertex.center.y + math.signum(pointsDelta.y) * targetDimension.height / 2
+        )
+    }
+
+
     val defaultLabelCenter =
       getDefaultLabelCenter
+
 
     val labelCenter = link.labelCenter
       .getOrElse(defaultLabelCenter)
@@ -533,38 +601,7 @@ G <: VisualGraph[V, L, G]
 
     segments.foreach(children.remove(_))
 
-    val targetAnchorPoint =
-      if (controller.renderDirected) {
-        val centersDelta =
-          sourceVertex.center - targetVertex.center
 
-        val targetDimension =
-          new Dimension2D(
-            targetVertexNode.width(),
-            targetVertexNode.height()
-          )
-
-
-        val intersectionWithTargetVerticalSide =
-          if (centersDelta.x != 0)
-            math.atan(math.abs(centersDelta.y / centersDelta.x)) <= math.atan(math.abs(targetDimension.height / targetDimension.width))
-          else
-            false
-
-        if (intersectionWithTargetVerticalSide)
-          new Point2D(
-            targetVertex.center.x + math.signum(centersDelta.x) * targetDimension.width / 2,
-
-            targetVertex.center.y + targetDimension.width / 2 * centersDelta.y / math.abs(centersDelta.x)
-          )
-        else
-          new Point2D(
-            targetVertex.center.x + targetDimension.height / 2 * centersDelta.x / math.abs(centersDelta.y),
-
-            targetVertex.center.y + math.signum(centersDelta.y) * targetDimension.height / 2
-          )
-      } else
-        targetVertex.center
 
 
     val sourcePoints =

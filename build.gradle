@@ -45,7 +45,7 @@ apply plugin: 'info.gianlucacosta.aurora'
 
 group = 'info.gianlucacosta.eighthbridge'
 archivesBaseName = 'eighthbridge'
-version = '8.1'
+version = '8.2'
 
 description = 'Interactive graph modeling and rendering for ScalaFX'
 
@@ -57,7 +57,7 @@ dependencies {
 
     compile 'org.scala-lang:scala-library:2.11.8'
 
-    compile 'info.gianlucacosta.helios:helios-fx:5.1'
+    compile 'info.gianlucacosta.helios:helios-fx:5.2'
 }
 
 
